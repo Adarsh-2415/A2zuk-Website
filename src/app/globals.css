@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+:root {
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --color-brand-green: #234E3D;
+  --color-brand-dark: #1B382B;
+  --color-brand-lime: #D4E865;
+  --color-brand-coral: #F2653B;
+  --color-brand-peach: #F8D7C8;
+  --color-canvas: #FAF8F5;
+}
+
+/* Accessible focus outlines */
+:focus-visible {
+  outline: 2px solid #234E3D;
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Coordinated Hero Entrance Keyframes (Fast, snappy, GPU-accelerated)
+   ========================================================================== */
+@keyframes heroFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFadeScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes starTwinkle {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.92;
+  }
+  50% {
+    transform: scale(1.1) rotate(4deg);
+    opacity: 1;
+  }
+}
+
+/* Hero Entrance Sequence */
+.animate-hero-badge {
+  animation: heroFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s backwards;
+}
+
+.animate-hero-title {
+  animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s backwards;
+}
+
+.animate-hero-desc {
+  animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s backwards;
+}
+
+.animate-hero-cta {
+  animation: heroFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.35s backwards;
+}
+
+.animate-hero-card {
+  animation: heroFadeScale 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
+}
+
+.animate-float-badge {
+  animation: floatGentle 4.5s ease-in-out infinite;
+}
+
+.animate-star-twinkle {
+  animation: starTwinkle 4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* ==========================================================================
+   Littlejoy Celebration Keyframes
+   ========================================================================== */
+@keyframes celebrationPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.65);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes confettiDrift {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px) rotate(0deg) scale(0.85);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(12px) rotate(45deg) scale(1);
+  }
+  75% {
+    opacity: 0.95;
+    transform: translateY(140px) rotate(240deg) scale(0.95);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(220px) rotate(360deg) scale(0.8);
+  }
+}
+
+.animate-celebration-pop {
+  animation: celebrationPop 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards;
+}
+
+.animate-confetti-drift {
+  animation: confettiDrift 3.6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+/* ==========================================================================
+   Reduced Motion Accessibility Override (MANDATORY)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *:not(.animate-confetti-drift, .animate-star-twinkle, .animate-float-badge),
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
