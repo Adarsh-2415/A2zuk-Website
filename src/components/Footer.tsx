@@ -46,9 +46,17 @@ export default function Footer() {
             </Link>
           </nav>
 
-          {/* Prototype / Verification Disclosure */}
-          <p className="text-center sm:text-right text-[#7B8D82]">
-            Concept design • Confirm rules and dates before launch
+          {/* Copyright & Credit */}
+          <p className="text-center sm:text-right text-[#6B7D72]">
+            &copy; 2026 A2ZUK. All rights reserved. Powered by{" "}
+            <a
+              href="https://fsir.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-[#1B382B] hover:text-[#234E3D] hover:underline underline-offset-2 transition-colors duration-200"
+            >
+              FutureSoft India
+            </a>
           </p>
         </div>
       </footer>
