@@ -43,8 +43,14 @@ function createGmailTransporter() {
   }
 
   return nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: { user, pass },
+    tls: {
+      // Prevents local Windows antivirus/firewall proxy SSL interception (SELF_SIGNED_CERT_IN_CHAIN)
+      rejectUnauthorized: false,
+    },
   });
 }
 
