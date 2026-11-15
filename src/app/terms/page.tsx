@@ -129,12 +129,11 @@ export default function TermsPage() {
         <>
           <p>
             To foster community enthusiasm and genuine participation, public voting
-            is designed to be accessible without mandatory voter accounts.
+            is authenticated via verified Google Sign-In to uphold strict one person, one vote integrity.
           </p>
           <ul className="list-disc pl-5 space-y-1.5 mt-2">
             <li>
-              The planned voting allocation is five votes per day in total per
-              voter across all contest entries.
+              Each verified voter receives exactly 1 official vote in the contest. Once cast, the ballot is sealed and permanent.
             </li>
             <li>
               Voting must reflect genuine individual human choices. Any attempt to
@@ -149,7 +148,7 @@ export default function TermsPage() {
         </>
       ),
       pendingNote:
-        "Exact daily reset cut-offs (presumed midnight IST) and specific anomaly detection thresholds remain to be confirmed.",
+        "Specific anomaly detection and anti-abuse thresholds remain subject to continuous monitoring.",
     },
     {
       id: "section-7",
@@ -172,7 +171,7 @@ export default function TermsPage() {
               security of the platform.
             </li>
             <li>
-              Circumvents daily voting caps or tampers with the voting ledger.
+              Circumvents voting rules, casts duplicate ballots, or tampers with the voting ledger.
             </li>
           </ul>
           <p className="mt-2">

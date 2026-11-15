@@ -66,7 +66,6 @@ async function ContestDetailContent({
     notFound();
   }
 
-  const dateLabel = getContestDateLabel(contest);
   const [winners, publishedEntries] = await Promise.all([
     contest.status === "ended"
       ? getContestWinners(contest.id, contest.status)
@@ -118,11 +117,6 @@ async function ContestDetailContent({
                   <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-[#234E3D]/10 text-[#234E3D] border border-[#234E3D]/15">
                     <span>🏆</span>
                     <span>{contest.prizeStructure.formattedTotalPool} Prize Pool</span>
-                  </span>
-                )}
-                {dateLabel && (
-                  <span className="text-xs sm:text-sm font-semibold text-[#5A6D61]">
-                    {dateLabel}
                   </span>
                 )}
               </div>
@@ -268,7 +262,7 @@ export default function ContestDetailPage({
               </span>
               <h3 className="font-bold text-[#1B382B] text-base mb-1">Voting Rules</h3>
               <p className="text-xs sm:text-sm text-[#4A5D52] leading-relaxed">
-                Voters can cast up to 5 votes per day in total across all participating entries without requiring a separate voter account.
+                Each verified Google account receives 1 official vote in total for the contest. Once cast, your ballot is permanently recorded.
               </p>
             </div>
 

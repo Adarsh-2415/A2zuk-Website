@@ -11,6 +11,7 @@ export function sortContests(contests: Contest[]): Contest[] {
     active: 1,
     upcoming: 2,
     ended: 3,
+    archived: 4,
   };
 
   return [...contests].sort((a, b) => {
@@ -64,8 +65,8 @@ export function formatContestDate(dateStr?: string): string {
  * Returns formatted status date display string
  */
 export function getContestDateLabel(contest: Contest): string {
-  if (contest.status === "active" && contest.endDate) {
-    return `Ends ${formatContestDate(contest.endDate)}`;
+  if (contest.status === "active") {
+    return "";
   }
   if (contest.status === "upcoming" && contest.startDate) {
     return `Starts ${formatContestDate(contest.startDate)}`;

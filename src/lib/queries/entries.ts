@@ -117,41 +117,46 @@ export async function getPublicEntryByCode(
 ): Promise<PublicContestantEntry | null> {
   "use cache";
   cacheLife("minutes");
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("entries")
-    .select(
-      `
-      ${PUBLIC_ENTRY_COLUMNS},
-      contests!inner (
-        slug
+  try {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from("entries")
+      .select(
+        `
+        ${PUBLIC_ENTRY_COLUMNS},
+        contests!inner (
+          slug
+        )
+      `,
       )
-    `,
-    )
-    .eq("status", "published")
-    .eq("public_code", entryCode)
-    .eq("contests.slug", contestSlug)
-    .maybeSingle();
+      .eq("status", "published")
+      .eq("public_code", entryCode)
+      .eq("contests.slug", contestSlug)
+      .maybeSingle();
 
-  if (error) {
-    console.error("[getPublicEntryByCode] Supabase error:", error.message);
-    throw new Error("Unable to load contestant entry right now.");
-  }
+    if (error) {
+      console.error("[getPublicEntryByCode] Supabase error:", error.message);
+      return null;
+    }
 
-  if (!data) {
+    if (!data) {
+      return null;
+    }
+
+    const typed = data as unknown as PublicEntryRow & {
+      contests: { slug: string };
+    };
+    return mapPublicEntry(supabase, typed, typed.contests.slug);
+  } catch (err) {
+    console.error("[getPublicEntryByCode] Unexpected error:", err);
     return null;
   }
-
-  const typed = data as unknown as PublicEntryRow & {
-    contests: { slug: string };
-  };
-  return mapPublicEntry(supabase, typed, typed.contests.slug);
 }
 
 /**
  * Resolves an entry for display on the contestant detail route.
- * 1. If published: returns public entry data immediately.
- * 2. If pending & caller is the authenticated parent owner: creates a safe temporary signed URL from the pending bucket and marks isParentPreview: true.
+ * 1. If published: returns public entry data and identifies whether caller is the parent owner.
+ * 2. If pending & caller is the authenticated parent owner: creates a safe temporary signed URL from the pending bucket and marks isParentPreview: true, isOwner: true.
  * 3. If pending & caller is a stranger/unauthenticated: returns displayStatus: "pending_public_waiting" so no private data leaks.
  * 4. Otherwise: returns displayStatus: "not_found".
  */
@@ -159,13 +164,39 @@ export async function getContestEntryForViewer(
   contestSlug: string,
   entryCode: string,
 ): Promise<ContestEntryDisplayResult> {
-  // Step 1: Check cached public published entry (fast path)
+  // Step 1: Check published entries
   try {
     const publicEntry = await getPublicEntryByCode(contestSlug, entryCode);
     if (publicEntry) {
+      let isOwner = false;
+      try {
+        const userClient = await createServerUserClient();
+        const {
+          data: { user },
+        } = await userClient.auth.getUser();
+        if (user?.id) {
+          const admin = createAdminClient();
+          const { data: check } = await admin
+            .from("entries")
+            .select("user_id")
+            .eq("public_code", entryCode)
+            .maybeSingle();
+          if (check?.user_id && check.user_id === user.id) {
+            isOwner = true;
+          }
+        }
+      } catch {
+        isOwner = false;
+      }
+
       return {
-        entry: publicEntry,
+        entry: {
+          ...publicEntry,
+          status: "published",
+          isOwner,
+        },
         displayStatus: "published",
+        isOwner,
       };
     }
   } catch {
@@ -205,6 +236,7 @@ export async function getContestEntryForViewer(
       return {
         entry: null,
         displayStatus: "not_found",
+        isOwner: false,
       };
     }
 
@@ -247,8 +279,10 @@ export async function getContestEntryForViewer(
             voteCount: rawEntry.vote_count,
             status: "pending",
             isParentPreview: true,
+            isOwner: true,
           },
           displayStatus: "pending_parent_preview",
+          isOwner: true,
         };
       }
 
@@ -256,6 +290,7 @@ export async function getContestEntryForViewer(
       return {
         entry: null,
         displayStatus: "pending_public_waiting",
+        isOwner: false,
       };
     }
 
@@ -263,12 +298,14 @@ export async function getContestEntryForViewer(
     return {
       entry: null,
       displayStatus: "not_found",
+      isOwner: false,
     };
   } catch (err) {
     console.error("[getContestEntryForViewer] Error checking pending entry:", err);
     return {
       entry: null,
       displayStatus: "not_found",
+      isOwner: false,
     };
   }
 }

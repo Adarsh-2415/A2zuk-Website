@@ -19,6 +19,13 @@ export function GoogleSignInButton({
   const handleSignIn = async () => {
     try {
       setIsLoading(true);
+      // Store redirect target in cookie for reliable post-auth return
+      if (typeof document !== "undefined") {
+        document.cookie = `auth_redirect_next=${encodeURIComponent(
+          redirectTo,
+        )}; path=/; max-age=600; SameSite=Lax`;
+      }
+
       const supabase = createClient();
       const origin = window.location.origin;
       const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`;

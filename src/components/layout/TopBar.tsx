@@ -18,7 +18,7 @@ export function TopBar() {
       {/* Quick Info & Support Link */}
       <div className="flex items-center gap-4 text-xs font-medium">
         <span className="text-[#4A5D52]">
-          Daily Voting: <strong className="text-[#1B382B] font-semibold">5 votes/day</strong>
+          Official Voting: <strong className="text-[#1B382B] font-semibold">1 Vote Per Person</strong>
         </span>
         <span className="text-black/15" aria-hidden="true">•</span>
         <Link

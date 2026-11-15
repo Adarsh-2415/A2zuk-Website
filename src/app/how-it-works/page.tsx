@@ -52,7 +52,7 @@ export default function HowItWorksPage() {
     },
     {
       index: "2",
-      text: "Each voter can cast up to five votes per day in total across all entries—not five votes per photo.",
+      text: "Each verified Google account can cast exactly 1 official vote in the contest.",
     },
     {
       index: "3",

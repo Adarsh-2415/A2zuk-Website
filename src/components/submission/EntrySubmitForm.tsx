@@ -15,6 +15,45 @@ interface EntrySubmitFormProps {
   contestSlug?: string;
 }
 
+export const INDIAN_STATES = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Andaman and Nicobar Islands",
+  "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Lakshadweep",
+  "Puducherry",
+] as const;
+
 export function EntrySubmitForm({
   contestSlug = "baby-photo-contest-1",
 }: EntrySubmitFormProps) {
@@ -22,6 +61,10 @@ export function EntrySubmitForm({
     guardianName: "",
     email: "",
     phone: "",
+    addressStreet: "",
+    city: "",
+    state: "",
+    pincode: "",
     childDisplayName: "",
     childDateOfBirth: "",
     ageCategory: "",
@@ -63,33 +106,37 @@ export function EntrySubmitForm({
     }
   }, []);
 
-  // Dynamic progress calculation across 5 sections
+  // Dynamic progress calculation across 6 sections
   const progressPercent = useMemo(() => {
     let completedSteps = 0;
     // Step 1: Guardian Details
     if (formData.guardianName.trim() && formData.email.trim() && formData.phone.trim()) {
       completedSteps += 1;
     }
-    // Step 2: Baby Details (Display Name & DOB)
+    // Step 2: Permanent Address
+    if (formData.addressStreet.trim() && formData.city.trim() && formData.state.trim() && formData.pincode.trim()) {
+      completedSteps += 1;
+    }
+    // Step 3: Baby Details (Display Name & DOB)
     if (formData.childDisplayName.trim() && formData.childDateOfBirth.trim()) {
       completedSteps += 1;
     }
-    // Step 3: Age Category
+    // Step 4: Age Category
     if (formData.ageCategory) {
       completedSteps += 1;
     }
-    // Step 4: Photo
+    // Step 5: Photo
     if (formData.photo) {
       completedSteps += 1;
     }
-    // Step 5: Consents
+    // Step 6: Consents
     if (formData.consentGuardian && formData.consentSharing && formData.consentRules) {
       completedSteps += 1;
     }
 
     return {
       completedSteps,
-      percentage: Math.round((completedSteps / 5) * 100),
+      percentage: Math.round((completedSteps / 6) * 100),
     };
   }, [formData]);
 
@@ -135,27 +182,51 @@ export function EntrySubmitForm({
       newErrors.phone = "Please enter a valid phone number (at least 10 digits).";
     }
 
-    // 4. Baby Display Name
-    if (!formData.childDisplayName.trim()) {
-      newErrors.childDisplayName = "Please enter your baby's display name for the contest page.";
+    // 4. Permanent Address Details
+    if (!formData.addressStreet.trim()) {
+      newErrors.addressStreet = "Please enter your permanent address / house details.";
+    } else if (formData.addressStreet.trim().length < 5) {
+      newErrors.addressStreet = "Please enter a complete street / house address (at least 5 characters).";
     }
 
-    // 5. Baby Date of Birth
+    if (!formData.city.trim()) {
+      newErrors.city = "Please enter your city / town.";
+    } else if (formData.city.trim().length < 2) {
+      newErrors.city = "Please enter a valid city name.";
+    }
+
+    if (!formData.state.trim()) {
+      newErrors.state = "Please select your state or union territory.";
+    }
+
+    const pincodeRegex = /^[1-9][0-9]{5}$/;
+    if (!formData.pincode.trim()) {
+      newErrors.pincode = "Please enter your 6-digit postal PIN code.";
+    } else if (!pincodeRegex.test(formData.pincode.trim())) {
+      newErrors.pincode = "Please enter a valid 6-digit Indian PIN code (e.g. 110001).";
+    }
+
+    // 5. Baby Display Name
+    if (!formData.childDisplayName.trim()) {
+      newErrors.childDisplayName = "Please provide your baby's display name for the contest page.";
+    }
+
+    // 6. Baby Date of Birth
     if (!formData.childDateOfBirth.trim()) {
       newErrors.childDateOfBirth = "Please select your baby's date of birth from the calendar.";
     }
 
-    // 6. Baby Age Category
+    // 7. Baby Age Category
     if (!formData.ageCategory) {
       newErrors.ageCategory = "Please choose the age category that best fits your baby.";
     }
 
-    // 7. Photo File
+    // 8. Photo File
     if (!formData.photo) {
       newErrors.photo = "Please upload a photo of your baby (Max 1 MB).";
     }
 
-    // 8. Mandatory Consents
+    // 9. Mandatory Consents
     if (!formData.consentGuardian) {
       newErrors.consentGuardian = "You must confirm you are the child's parent or legal guardian.";
     }
@@ -195,6 +266,10 @@ export function EntrySubmitForm({
       payload.set("guardianName", formData.guardianName.trim());
       payload.set("email", formData.email.trim());
       payload.set("phone", formData.phone.trim());
+      payload.set("addressStreet", formData.addressStreet.trim());
+      payload.set("city", formData.city.trim());
+      payload.set("state", formData.state.trim());
+      payload.set("pincode", formData.pincode.trim());
       payload.set("childDisplayName", formData.childDisplayName.trim());
       payload.set("childDateOfBirth", formData.childDateOfBirth);
       payload.set("ageCategory", formData.ageCategory);
@@ -236,6 +311,10 @@ export function EntrySubmitForm({
       guardianName: "",
       email: "",
       phone: "",
+      addressStreet: "",
+      city: "",
+      state: "",
+      pincode: "",
       childDisplayName: "",
       childDateOfBirth: "",
       ageCategory: "",
@@ -312,7 +391,7 @@ export function EntrySubmitForm({
               {/* Progress Pill */}
               <div className="self-start sm:self-auto flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF8F5] border border-[#EFECE4] text-xs font-semibold text-[#1B382B]">
                 <span className="w-2 h-2 rounded-full bg-[#234E3D]" />
-                <span>{progressPercent.completedSteps} of 5 completed ({progressPercent.percentage}%)</span>
+                <span>{progressPercent.completedSteps} of 6 completed ({progressPercent.percentage}%)</span>
               </div>
             </div>
 
@@ -464,11 +543,122 @@ export function EntrySubmitForm({
               </div>
             </div>
 
-            {/* SECTION 2: Baby's Details */}
+            {/* SECTION 2: Permanent & Prize Delivery Address */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-[#F5F2EA]">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#234E3D]/10 text-[#234E3D] flex items-center justify-center text-xs font-bold">
+                    2
+                  </span>
+                  <h3 className="text-sm font-bold text-[#1B382B] uppercase tracking-wide">
+                    Permanent & Prize Delivery Address
+                  </h3>
+                </div>
+                <span className="text-[11px] text-[#5A6D61] font-medium hidden sm:inline">
+                  🔒 Private & confidential
+                </span>
+              </div>
+
+              <p className="text-xs text-[#5A6D61]">
+                Required for winner verification and physical certificate/gift delivery. Never shown publicly.
+              </p>
+
+              {/* Street Address */}
+              <div className="space-y-1.5" id="addressStreet">
+                <label htmlFor="address-street" className="block text-xs sm:text-sm font-semibold text-[#1B382B]">
+                  House / Flat No., Apartment / Street Name <span className="text-[#F2653B]">*</span>
+                </label>
+                <input
+                  id="address-street"
+                  type="text"
+                  value={formData.addressStreet}
+                  onChange={(e) => handleTextChange("addressStreet", e.target.value)}
+                  placeholder="e.g. Flat 302, Palm Heights, Main Street"
+                  className={`w-full px-4 py-3 rounded-xl text-sm bg-[#FAF8F5] border text-[#1B382B] placeholder:text-[#5A6D61]/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#234E3D] transition-all ${
+                    errors.addressStreet ? "border-red-400 bg-red-50/20" : "border-[#EFECE4]"
+                  }`}
+                />
+                {errors.addressStreet && (
+                  <p className="text-xs font-medium text-red-600">{errors.addressStreet}</p>
+                )}
+              </div>
+
+              {/* City, State & Pincode Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* City */}
+                <div className="space-y-1.5" id="city">
+                  <label htmlFor="address-city" className="block text-xs sm:text-sm font-semibold text-[#1B382B]">
+                    City / Town <span className="text-[#F2653B]">*</span>
+                  </label>
+                  <input
+                    id="address-city"
+                    type="text"
+                    value={formData.city}
+                    onChange={(e) => handleTextChange("city", e.target.value)}
+                    placeholder="e.g. Mumbai"
+                    className={`w-full px-4 py-3 rounded-xl text-sm bg-[#FAF8F5] border text-[#1B382B] placeholder:text-[#5A6D61]/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#234E3D] transition-all ${
+                      errors.city ? "border-red-400 bg-red-50/20" : "border-[#EFECE4]"
+                    }`}
+                  />
+                  {errors.city && (
+                    <p className="text-xs font-medium text-red-600">{errors.city}</p>
+                  )}
+                </div>
+
+                {/* State */}
+                <div className="space-y-1.5" id="state">
+                  <label htmlFor="address-state" className="block text-xs sm:text-sm font-semibold text-[#1B382B]">
+                    State / UT <span className="text-[#F2653B]">*</span>
+                  </label>
+                  <select
+                    id="address-state"
+                    value={formData.state}
+                    onChange={(e) => handleTextChange("state", e.target.value)}
+                    className={`w-full px-4 py-3 rounded-xl text-sm bg-[#FAF8F5] border text-[#1B382B] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#234E3D] transition-all ${
+                      errors.state ? "border-red-400 bg-red-50/20" : "border-[#EFECE4]"
+                    }`}
+                  >
+                    <option value="">Select State</option>
+                    {INDIAN_STATES.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.state && (
+                    <p className="text-xs font-medium text-red-600">{errors.state}</p>
+                  )}
+                </div>
+
+                {/* PIN Code */}
+                <div className="space-y-1.5" id="pincode">
+                  <label htmlFor="address-pincode" className="block text-xs sm:text-sm font-semibold text-[#1B382B]">
+                    6-Digit PIN code <span className="text-[#F2653B]">*</span>
+                  </label>
+                  <input
+                    id="address-pincode"
+                    type="text"
+                    maxLength={6}
+                    inputMode="numeric"
+                    value={formData.pincode}
+                    onChange={(e) => handleTextChange("pincode", e.target.value.replace(/\D/g, ""))}
+                    placeholder="e.g. 400001"
+                    className={`w-full px-4 py-3 rounded-xl text-sm bg-[#FAF8F5] border text-[#1B382B] placeholder:text-[#5A6D61]/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#234E3D] transition-all ${
+                      errors.pincode ? "border-red-400 bg-red-50/20" : "border-[#EFECE4]"
+                    }`}
+                  />
+                  {errors.pincode && (
+                    <p className="text-xs font-medium text-red-600">{errors.pincode}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 3: Baby's Details */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 pb-2 border-b border-[#F5F2EA]">
                 <span className="w-6 h-6 rounded-full bg-[#234E3D]/10 text-[#234E3D] flex items-center justify-center text-xs font-bold">
-                  2
+                  3
                 </span>
                 <h3 className="text-sm font-bold text-[#1B382B] uppercase tracking-wide">
                   Baby’s Details
@@ -518,11 +708,11 @@ export function EntrySubmitForm({
               </div>
             </div>
 
-            {/* SECTION 3: Baby's Age Category (Selectable Cards) */}
+            {/* SECTION 4: Baby's Age Category (Selectable Cards) */}
             <div className="space-y-4" id="ageCategory">
               <div className="flex items-center gap-2 pb-2 border-b border-[#F5F2EA]">
                 <span className="w-6 h-6 rounded-full bg-[#234E3D]/10 text-[#234E3D] flex items-center justify-center text-xs font-bold">
-                  3
+                  4
                 </span>
                 <h3 className="text-sm font-bold text-[#1B382B] uppercase tracking-wide">
                   Baby’s Age Category
@@ -541,11 +731,11 @@ export function EntrySubmitForm({
               />
             </div>
 
-            {/* SECTION 4: Upload a Photo */}
+            {/* SECTION 5: Upload a Photo */}
             <div className="space-y-4" id="photo">
               <div className="flex items-center gap-2 pb-2 border-b border-[#F5F2EA]">
                 <span className="w-6 h-6 rounded-full bg-[#234E3D]/10 text-[#234E3D] flex items-center justify-center text-xs font-bold">
-                  4
+                  5
                 </span>
                 <h3 className="text-sm font-bold text-[#1B382B] uppercase tracking-wide">
                   Upload a Photo
@@ -563,11 +753,11 @@ export function EntrySubmitForm({
               />
             </div>
 
-            {/* SECTION 5: Consent and Confirmation */}
+            {/* SECTION 6: Consent and Confirmation */}
             <div className="space-y-4 pt-2">
               <div className="flex items-center gap-2 pb-2 border-b border-[#F5F2EA]">
                 <span className="w-6 h-6 rounded-full bg-[#234E3D]/10 text-[#234E3D] flex items-center justify-center text-xs font-bold">
-                  5
+                  6
                 </span>
                 <h3 className="text-sm font-bold text-[#1B382B] uppercase tracking-wide">
                   Consent & Confirmation

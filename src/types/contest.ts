@@ -1,4 +1,4 @@
-export type ContestStatus = "active" | "upcoming" | "ended";
+export type ContestStatus = "active" | "upcoming" | "ended" | "archived";
 
 export interface Contest {
   id: string;

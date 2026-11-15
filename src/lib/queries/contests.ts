@@ -100,23 +100,40 @@ const CONTEST_SELECT = `
   )
 `;
 
+const DUMMY_CONTEST_SLUGS = new Set([
+  "toddler-play-giggles",
+  "little-explorers-dress-up",
+  "newborn-first-smiles",
+]);
+
 export async function getPublicContests(): Promise<Contest[]> {
   "use cache";
   cacheLife("minutes");
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("contests")
-    .select(CONTEST_SELECT);
+  try {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from("contests")
+      .select(CONTEST_SELECT)
+      .neq("status", "archived");
 
-  if (error) {
-    console.error("[getPublicContests] Supabase error:", error.message);
-    throw new Error("Unable to load contests right now.");
+    if (error) {
+      console.error("[getPublicContests] Supabase error:", error.message);
+      return [];
+    }
+
+    const mapped = (data ?? [])
+      .map((row) => mapContestRow(row as unknown as ContestWithPrizesRow))
+      .filter(
+        (c) =>
+          !DUMMY_CONTEST_SLUGS.has(c.slug) &&
+          c.status !== "archived",
+      );
+
+    return sortContests(mapped);
+  } catch (err) {
+    console.error("[getPublicContests] Unexpected error:", err);
+    return [];
   }
-
-  const mapped = (data ?? []).map((row) =>
-    mapContestRow(row as unknown as ContestWithPrizesRow),
-  );
-  return sortContests(mapped);
 }
 
 export async function getFeaturedContest(): Promise<Contest | null> {
@@ -167,7 +184,10 @@ export async function getPublicContestSlugs(): Promise<string[]> {
     if (error || !data || data.length === 0) {
       return ["baby-photo-contest-1"];
     }
-    return data.map((row) => row.slug);
+    const slugs = data
+      .map((row) => row.slug)
+      .filter((slug) => !DUMMY_CONTEST_SLUGS.has(slug));
+    return slugs.length > 0 ? slugs : ["baby-photo-contest-1"];
   } catch {
     return ["baby-photo-contest-1"];
   }

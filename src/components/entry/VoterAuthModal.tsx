@@ -58,10 +58,10 @@ export function VoterAuthModal({
 
         <div>
           <h2 id="voter-modal-title" className="text-xl sm:text-2xl font-bold text-[#1B382B] tracking-tight">
-            Vote for {contestantName}
+            Cast Your Official Vote for {contestantName}
           </h2>
           <p className="text-xs sm:text-sm text-[#5A6D61] mt-2 leading-relaxed">
-            Quick 1-click verification ensures fair community voting. No passwords or account creation needed.
+            Quick 1-click Google verification ensures free, fair election voting. No passwords or lengthy registration needed.
           </p>
         </div>
 
@@ -69,14 +69,14 @@ export function VoterAuthModal({
         <div className="pt-2 flex flex-col items-center">
           <GoogleSignInButton
             redirectTo={redirectTo}
-            label="Verify with Google to Vote"
+            label="Verify with Google to Cast Vote"
             className="w-full shadow-sm"
           />
         </div>
 
         <div className="pt-2 border-t border-[#EFECE4]">
-          <p className="text-[11px] text-[#5A6D61]">
-            🔒 Each verified Google account receives <strong>5 free votes per day (IST)</strong>.
+          <p className="text-[11px] text-[#5A6D61] leading-relaxed">
+            🔒 <strong>Election Voting Rule:</strong> Each verified Google account receives <strong>1 official vote for the entire contest</strong>. Once submitted, your ballot is sealed and permanent.
           </p>
         </div>
       </div>

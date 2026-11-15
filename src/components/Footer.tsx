@@ -48,14 +48,14 @@ export default function Footer() {
 
           {/* Copyright & Credit */}
           <p className="text-center sm:text-right text-[#6B7D72]">
-            &copy; 2026 A2ZUK. All rights reserved. Powered by{" "}
+            &copy; 2026 A2ZUK. All rights reserved. Developed by{" "}
             <a
               href="https://fsir.in"
               target="_blank"
               rel="noopener noreferrer"
               className="font-bold text-[#1B382B] hover:text-[#234E3D] hover:underline underline-offset-2 transition-colors duration-200"
             >
-              FutureSoft India
+              FutureSoft India Roorkee
             </a>
           </p>
         </div>

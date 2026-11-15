@@ -20,10 +20,14 @@ export default function EntryVoteControl({
   isVotingOpen,
 }: EntryVoteControlProps) {
   const [voteCount, setVoteCount] = useState(initialVoteCount);
-  const [votesRemainingToday, setVotesRemainingToday] = useState<number>(5);
-  const [hasVotedForEntry, setHasVotedForEntry] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [hasVotedInContest, setHasVotedInContest] = useState(false);
+  const [hasVotedForThisEntry, setHasVotedForThisEntry] = useState(false);
+  const [votedForBabyName, setVotedForBabyName] = useState<string | null>(null);
+  const [isParentOwner, setIsParentOwner] = useState(false);
+
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isLoadingStatus, setIsLoadingStatus] = useState(isVotingOpen);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{
@@ -40,32 +44,42 @@ export default function EntryVoteControl({
     if (!isVotingOpen) return;
 
     let cancelled = false;
-    async function loadStatus() {
+    async function loadElectionStatus() {
       try {
         const res = await fetch(
-          `/api/votes/status?contestSlug=${encodeURIComponent(contestSlug)}&entryCode=${encodeURIComponent(entryCode)}`,
+          `/api/votes/status?contestSlug=${encodeURIComponent(
+            contestSlug,
+          )}&entryCode=${encodeURIComponent(entryCode)}`,
           { cache: "no-store" },
         );
         if (!res.ok) return;
         const data = (await res.json()) as {
           ok?: boolean;
           isAuthenticated?: boolean;
-          votesRemainingToday?: number;
-          hasVotedForEntry?: boolean;
+          hasVotedInContest?: boolean;
+          hasVotedForThisEntry?: boolean;
+          votedForBabyName?: string | null;
+          isParentOwner?: boolean;
         };
         if (!cancelled && data.ok) {
           if (typeof data.isAuthenticated === "boolean") {
             setIsAuthenticated(data.isAuthenticated);
           }
-          if (typeof data.votesRemainingToday === "number") {
-            setVotesRemainingToday(data.votesRemainingToday);
+          if (typeof data.hasVotedInContest === "boolean") {
+            setHasVotedInContest(data.hasVotedInContest);
           }
-          if (typeof data.hasVotedForEntry === "boolean") {
-            setHasVotedForEntry(data.hasVotedForEntry);
+          if (typeof data.hasVotedForThisEntry === "boolean") {
+            setHasVotedForThisEntry(data.hasVotedForThisEntry);
+          }
+          if (data.votedForBabyName) {
+            setVotedForBabyName(data.votedForBabyName);
+          }
+          if (typeof data.isParentOwner === "boolean") {
+            setIsParentOwner(data.isParentOwner);
           }
         }
       } catch {
-        // Ignore transient status fetch failure; POST /api/votes enforces rules authoritatively.
+        // Fallback: POST /api/votes authoritatively enforces rules
       } finally {
         if (!cancelled) {
           setIsLoadingStatus(false);
@@ -73,23 +87,29 @@ export default function EntryVoteControl({
       }
     }
 
-    loadStatus();
+    loadElectionStatus();
     return () => {
       cancelled = true;
     };
   }, [contestSlug, entryCode, isVotingOpen]);
 
-  async function handleVote() {
-    if (!isVotingOpen || isSubmitting || hasVotedForEntry || votesRemainingToday <= 0) {
+  function handleInitiateVote() {
+    if (!isVotingOpen || isSubmitting || hasVotedInContest || isParentOwner) {
       return;
     }
 
-    // If voter is not logged in with Google, prompt 1-click verification immediately
+    // Step 1: Require Google authentication
     if (!isAuthenticated) {
       setIsAuthModalOpen(true);
       return;
     }
 
+    // Step 2: Show Election Confirmation modal before permanently sealing ballot
+    setIsConfirmModalOpen(true);
+  }
+
+  async function handleConfirmCastVote() {
+    setIsConfirmModalOpen(false);
     setIsSubmitting(true);
     setFeedback(null);
 
@@ -105,8 +125,6 @@ export default function EntryVoteControl({
         requiresAuth?: boolean;
         error?: string;
         newVoteCount?: number;
-        votesRemainingToday?: number;
-        voteStatus?: "valid" | "quarantined";
       };
 
       if (!res.ok || !data.ok) {
@@ -117,10 +135,10 @@ export default function EntryVoteControl({
         }
 
         if (res.status === 409) {
-          setHasVotedForEntry(true);
-        } else if (res.status === 429) {
-          setVotesRemainingToday(0);
+          setHasVotedInContest(true);
+          setHasVotedForThisEntry(true);
         }
+
         setFeedback({
           type: "error",
           message: data.error || "Unable to record your vote right now.",
@@ -131,16 +149,12 @@ export default function EntryVoteControl({
       if (typeof data.newVoteCount === "number") {
         setVoteCount(data.newVoteCount);
       }
-      if (typeof data.votesRemainingToday === "number") {
-        setVotesRemainingToday(data.votesRemainingToday);
-      }
-      setHasVotedForEntry(true);
+      setHasVotedInContest(true);
+      setHasVotedForThisEntry(true);
+      setVotedForBabyName(displayName);
       setFeedback({
         type: "success",
-        message:
-          data.voteStatus === "quarantined"
-            ? "Thank you! Your vote has been received for verification."
-            : `Thank you for voting for ${displayName}!`,
+        message: `Your 1 official vote has been cast and recorded for ${displayName}!`,
       });
     } catch {
       setFeedback({
@@ -155,18 +169,22 @@ export default function EntryVoteControl({
   const isDisabled =
     !isVotingOpen ||
     isSubmitting ||
-    hasVotedForEntry ||
-    votesRemainingToday <= 0;
+    hasVotedInContest ||
+    isParentOwner;
 
-  let buttonLabel = `Vote for ${displayName}`;
+  let buttonLabel = `Cast Vote for ${displayName}`;
   if (!isVotingOpen) {
     buttonLabel = "Voting Closed";
   } else if (isSubmitting) {
-    buttonLabel = "Recording Vote…";
-  } else if (hasVotedForEntry) {
-    buttonLabel = "Voted Today ✓";
-  } else if (votesRemainingToday <= 0) {
-    buttonLabel = "Daily Limit Reached (5/5)";
+    buttonLabel = "Sealing Ballot…";
+  } else if (hasVotedForThisEntry) {
+    buttonLabel = "Ballot Cast for " + displayName + " ✓";
+  } else if (hasVotedInContest) {
+    buttonLabel = votedForBabyName
+      ? `Voted for ${votedForBabyName}`
+      : "Ballot Already Cast";
+  } else if (isParentOwner) {
+    buttonLabel = "Parent View (Cannot Self-Vote)";
   }
 
   return (
@@ -175,11 +193,13 @@ export default function EntryVoteControl({
       <div className="animate-hero-desc w-full max-w-md p-4 rounded-2xl bg-[#FAF8F5] border border-[#EFECE4] flex items-center justify-between mb-5">
         <div className="flex items-center gap-2.5">
           <span
-            className={`w-2.5 h-2.5 rounded-full ${isVotingOpen ? "bg-[#234E3D]" : "bg-[#5A6D61]/40"}`}
+            className={`w-2.5 h-2.5 rounded-full ${
+              isVotingOpen ? "bg-[#234E3D]" : "bg-[#5A6D61]/40"
+            }`}
             aria-hidden="true"
           />
           <span className="text-xs sm:text-sm font-semibold text-[#1B382B]">
-            Public Vote Count
+            Verified Vote Tally
           </span>
         </div>
         <span className="text-xs sm:text-sm font-bold text-[#1B382B] bg-white px-3 py-1 rounded-full border border-[#EFECE4]">
@@ -194,7 +214,7 @@ export default function EntryVoteControl({
             type="button"
             disabled={isDisabled}
             aria-disabled={isDisabled}
-            onClick={handleVote}
+            onClick={handleInitiateVote}
             className={`flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-sm sm:text-base font-bold transition-all duration-200 select-none ${
               isDisabled
                 ? "bg-[#234E3D]/50 text-white/90 cursor-not-allowed shadow-none"
@@ -207,7 +227,7 @@ export default function EntryVoteControl({
           <ShareEntryButton title={displayName} />
         </div>
 
-        {/* Remaining daily votes or status feedback */}
+        {/* Status feedback & Election helper microcopy */}
         {feedback ? (
           <p
             role={feedback.type === "error" ? "alert" : "status"}
@@ -218,23 +238,87 @@ export default function EntryVoteControl({
             {feedback.message}
           </p>
         ) : (
-          <p className="text-xs font-semibold text-[#5A6D61]">
-            {!isVotingOpen
-              ? "Voting is only open while the contest is active."
-              : isLoadingStatus
-                ? "Checking your daily vote allowance…"
-                : `${votesRemainingToday} of 5 votes remaining today (resets midnight IST).`}
+          <p className="text-xs font-medium text-[#5A6D61] leading-relaxed">
+            {!isVotingOpen ? (
+              "Voting is only open while the contest is active."
+            ) : isLoadingStatus ? (
+              "Checking election ballot status…"
+            ) : isParentOwner ? (
+              "🔒 Parents cannot vote for their own child. Share this entry to gather votes from family and friends!"
+            ) : hasVotedForThisEntry ? (
+              "✅ Your official ballot is sealed for this contestant."
+            ) : hasVotedInContest ? (
+              `🔒 You have already cast your 1 official vote in this contest${
+                votedForBabyName ? ` for ${votedForBabyName}` : ""
+              }. Ballots cannot be changed.`
+            ) : (
+              "🗳️ Election Rule: 1 official vote per verified Google account for the entire contest."
+            )}
           </p>
         )}
       </div>
 
+      {/* Google Authentication Modal for Visitors */}
       <VoterAuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         contestantName={displayName}
         redirectTo={currentPath}
       />
+
+      {/* Election Ballot Confirmation Modal */}
+      {isConfirmModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-vote-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in"
+        >
+          <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 border border-[#EFECE4] shadow-2xl space-y-5 animate-scale-in text-center relative">
+            <div className="w-14 h-14 mx-auto rounded-full bg-[#234E3D]/10 text-[#234E3D] flex items-center justify-center text-2xl font-bold">
+              🗳️
+            </div>
+
+            <div>
+              <h2
+                id="confirm-vote-title"
+                className="text-xl sm:text-2xl font-bold text-[#1B382B] tracking-tight"
+              >
+                Confirm Your 1 Official Vote
+              </h2>
+              <p className="text-xs sm:text-sm text-[#4A5D52] mt-2 leading-relaxed">
+                You are casting your official vote for <strong>{displayName}</strong>.
+              </p>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-[#FAF8F5] border border-[#EFECE4] text-xs text-[#5A6D61] text-left space-y-1.5">
+              <p className="font-bold text-[#1B382B]">
+                ⚖️ Official Election Rule:
+              </p>
+              <p>
+                Each verified Google account gets <strong>exactly 1 vote per contest</strong>. Once cast, your ballot is permanently sealed and cannot be changed or transferred to another child.
+              </p>
+            </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-center gap-2.5">
+              <button
+                type="button"
+                onClick={handleConfirmCastVote}
+                className="w-full sm:flex-1 py-3 px-5 rounded-full text-xs sm:text-sm font-bold text-white bg-[#234E3D] hover:bg-[#1A3B2E] transition-all shadow-sm cursor-pointer"
+              >
+                Yes, Seal My Vote
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsConfirmModalOpen(false)}
+                className="w-full sm:w-auto py-3 px-5 rounded-full text-xs font-semibold text-[#5A6D61] bg-[#FAF8F5] hover:bg-[#EFECE4] border border-[#EFECE4] transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
-

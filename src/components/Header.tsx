@@ -6,9 +6,11 @@ import { DesktopNav } from "./layout/DesktopNav";
 import { MobileNav } from "./layout/MobileNav";
 import { TopBar } from "./layout/TopBar";
 import { cn } from "@/lib/utils/cn";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [user, setUser] = useState<{ email?: string; name?: string } | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +21,45 @@ export default function Header() {
     // Check initial scroll position
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    try {
+      const supabase = createClient();
+      supabase.auth.getUser().then(({ data }) => {
+        if (data?.user) {
+          const email = data.user.email ?? "";
+          const name =
+            (data.user.user_metadata?.full_name as string | undefined) ??
+            (data.user.user_metadata?.name as string | undefined) ??
+            email.split("@")[0] ??
+            "User";
+          setUser({ email, name });
+        } else {
+          setUser(null);
+        }
+      });
+
+      const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (session?.user) {
+          const email = session.user.email ?? "";
+          const name =
+            (session.user.user_metadata?.full_name as string | undefined) ??
+            (session.user.user_metadata?.name as string | undefined) ??
+            email.split("@")[0] ??
+            "User";
+          setUser({ email, name });
+        } else {
+          setUser(null);
+        }
+      });
+
+      return () => {
+        authListener?.subscription.unsubscribe();
+      };
+    } catch {
+      // Ignore client auth detection error
+    }
   }, []);
 
   return (
@@ -71,13 +112,39 @@ export default function Header() {
           {/* Desktop Nav with active indicator dot and dynamic collapse */}
           <DesktopNav isScrolled={isScrolled} />
 
-          {/* Desktop CTA Button */}
+          {/* Desktop User Status & CTA Button */}
           <div className="hidden md:flex items-center gap-2">
+            {user ? (
+              <Link
+                href="/profile"
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full font-semibold text-[#1B382B] bg-[#FAF8F5] hover:bg-[#F0ECE1] border border-[#E8DFC8] transition-all duration-200 shadow-2xs whitespace-nowrap",
+                  isScrolled ? "px-2.5 py-1 text-xs" : "px-3.5 py-1.5 text-xs sm:text-sm"
+                )}
+                title="View your contestant profile & votes"
+              >
+                <span className="w-5 h-5 rounded-full bg-[#234E3D] text-white flex items-center justify-center text-[10px] font-bold">
+                  {user.name ? user.name[0]?.toUpperCase() : "👤"}
+                </span>
+                <span>My Profile</span>
+              </Link>
+            ) : (
+              <Link
+                href="/profile"
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full font-semibold text-[#1B382B] hover:text-[#234E3D] hover:bg-[#234E3D]/8 transition-all duration-200 whitespace-nowrap",
+                  isScrolled ? "px-2.5 py-1 text-xs" : "px-3.5 py-1.5 text-xs sm:text-sm"
+                )}
+              >
+                Sign In
+              </Link>
+            )}
+
             <Link
               href="/contests/baby-photo-contest-1/submit"
               className={cn(
                 "inline-flex items-center justify-center rounded-full font-semibold text-white bg-[#234E3D] hover:bg-[#1A3B2E] hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-300 shadow-sm hover:shadow-md whitespace-nowrap",
-                isScrolled ? "px-3.5 py-1.5 text-xs" : "px-5 py-2 text-sm"
+                isScrolled ? "px-3.5 py-1.5 text-xs" : "px-4.5 py-2 text-xs sm:text-sm"
               )}
             >
               Participate Now
@@ -85,7 +152,7 @@ export default function Header() {
           </div>
 
           {/* Mobile Nav Trigger and Drawer */}
-          <MobileNav />
+          <MobileNav user={user} />
         </div>
       </div>
     </header>

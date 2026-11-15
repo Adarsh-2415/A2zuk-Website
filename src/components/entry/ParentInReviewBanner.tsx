@@ -58,7 +58,7 @@ export default function ParentInReviewBanner({
           <span>⚡</span> Fast 1-click email approval enabled
         </span>
         <span className="flex items-center gap-1.5">
-          <span>📲</span> Share link ready below
+          <span>🔒</span> Action buttons unlocked upon approval
         </span>
       </div>
     </div>

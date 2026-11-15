@@ -1,13 +1,10 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { getIstDateString } from "@/lib/security/voter-token";
-
-const DAILY_VOTE_LIMIT = 5;
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const contestSlug = searchParams.get("contestSlug")?.trim() ?? "";
+  const contestSlug = searchParams.get("contestSlug")?.trim() ?? "baby-photo-contest-1";
   const entryCode = searchParams.get("entryCode")?.trim() ?? "";
 
   // Check if voter is authenticated with Google
@@ -24,57 +21,86 @@ export async function GET(request: Request) {
     return NextResponse.json({
       ok: true,
       isAuthenticated: false,
-      votesUsedToday: 0,
-      votesRemainingToday: DAILY_VOTE_LIMIT,
-      hasVotedForEntry: false,
-      dailyLimit: DAILY_VOTE_LIMIT,
+      hasVotedInContest: false,
+      hasVotedForThisEntry: false,
+      votedForEntryCode: null,
+      votedForBabyName: null,
+      isParentOwner: false,
     });
   }
 
   const supabase = createAdminClient();
-  const todayIst = getIstDateString();
 
-  const { data: todayVotes, error } = await supabase
-    .from("votes")
-    .select("entry_id")
-    .eq("user_id", user.id)
-    .eq("vote_date_ist", todayIst)
-    .in("status", ["valid", "quarantined"]);
+  // Find contest id
+  const { data: contestRow } = await supabase
+    .from("contests")
+    .select("id, status")
+    .eq("slug", contestSlug)
+    .maybeSingle();
 
-  if (error) {
+  if (!contestRow) {
     return NextResponse.json(
-      { ok: false, error: "Unable to check voting status." },
-      { status: 500 },
+      { ok: false, error: "Contest not found." },
+      { status: 404 },
     );
   }
 
-  const votesUsedToday = todayVotes?.length ?? 0;
-  let hasVotedForEntry = false;
-
-  if (contestSlug && entryCode && votesUsedToday > 0) {
-    const { data: entryRow } = await supabase
+  // Check if the current user is the parent owner of this entry
+  let isParentOwner = false;
+  if (entryCode) {
+    const { data: currentEntry } = await supabase
       .from("entries")
-      .select("id, contests!inner(slug)")
+      .select("id, user_id")
       .eq("public_code", entryCode)
-      .eq("contests.slug", contestSlug)
-      .eq("status", "published")
+      .eq("contest_id", contestRow.id)
       .maybeSingle();
 
-    if (entryRow) {
-      hasVotedForEntry = (todayVotes ?? []).some(
-        (v) => v.entry_id === entryRow.id,
-      );
+    if (currentEntry?.user_id && currentEntry.user_id === user.id) {
+      isParentOwner = true;
     }
   }
+
+  // Check if voter has cast their 1 official vote in this contest
+  const { data: existingVote, error: voteError } = await supabase
+    .from("votes")
+    .select(
+      `
+      id,
+      entry_id,
+      entries!inner (
+        public_code,
+        baby_name
+      )
+    `,
+    )
+    .eq("contest_id", contestRow.id)
+    .eq("user_id", user.id)
+    .in("status", ["valid", "quarantined"])
+    .maybeSingle();
+
+  if (voteError) {
+    console.error("[votes/status] Error querying votes:", voteError.message);
+  }
+
+  const hasVotedInContest = Boolean(existingVote);
+  const typedEntry = existingVote?.entries as unknown as
+    | { public_code: string; baby_name: string }
+    | undefined;
+
+  const votedForEntryCode = typedEntry?.public_code ?? null;
+  const votedForBabyName = typedEntry?.baby_name ?? null;
+  const hasVotedForThisEntry = Boolean(
+    entryCode && votedForEntryCode && entryCode === votedForEntryCode,
+  );
 
   return NextResponse.json({
     ok: true,
     isAuthenticated: true,
     userEmail: user.email,
-    votesUsedToday,
-    votesRemainingToday: Math.max(0, DAILY_VOTE_LIMIT - votesUsedToday),
-    hasVotedForEntry,
-    dailyLimit: DAILY_VOTE_LIMIT,
+    hasVotedInContest,
+    hasVotedForThisEntry,
+    votedForEntryCode,
+    votedForBabyName,
+    isParentOwner,
   });
 }
-

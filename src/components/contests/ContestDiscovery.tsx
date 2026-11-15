@@ -63,12 +63,24 @@ export function ContestDiscovery({ contests }: ContestDiscoveryProps) {
     );
   }
 
-  const filterTabs: { label: string; value: FilterOption }[] = [
-    { label: "All", value: "all" },
-    { label: "Active", value: "active" },
-    { label: "Upcoming", value: "upcoming" },
-    { label: "Ended", value: "ended" },
-  ];
+  // Dynamic filter tabs: only show status tabs that actually exist
+  const filterTabs = useMemo(() => {
+    const statuses = new Set(contests.map((c) => c.status));
+    const tabs: { label: string; value: FilterOption }[] = [];
+    if (statuses.size > 1) {
+      tabs.push({ label: "All", value: "all" });
+    }
+    if (statuses.has("active")) {
+      tabs.push({ label: "Active", value: "active" });
+    }
+    if (statuses.has("upcoming")) {
+      tabs.push({ label: "Upcoming", value: "upcoming" });
+    }
+    if (statuses.has("ended")) {
+      tabs.push({ label: "Ended", value: "ended" });
+    }
+    return tabs;
+  }, [contests]);
 
   return (
     <section id="explore-contests" className="w-full py-6 sm:py-10 space-y-8">
@@ -89,33 +101,36 @@ export function ContestDiscovery({ contests }: ContestDiscoveryProps) {
         </div>
       </div>
 
-      {/* Status Filter Pills */}
-      <div className="flex items-center justify-between gap-4">
-        <div
-          className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0"
-          role="tablist"
-          aria-label="Filter contests by status"
-        >
-          {filterTabs.map((tab) => {
-            const isSelected = selectedStatus === tab.value;
-            return (
-              <button
-                key={tab.value}
-                type="button"
-                role="tab"
-                aria-selected={isSelected}
-                onClick={() => setSelectedStatus(tab.value)}
-                className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#234E3D] ${isSelected
-                    ? "bg-[#234E3D] text-white shadow-xs"
-                    : "bg-white text-[#4A5D52] hover:bg-black/5 hover:text-[#1B382B] border border-[#EFECE4]"
+      {/* Status Filter Pills (Only shown when multiple contest categories exist) */}
+      {filterTabs.length > 1 && (
+        <div className="flex items-center justify-between gap-4">
+          <div
+            className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0"
+            role="tablist"
+            aria-label="Filter contests by status"
+          >
+            {filterTabs.map((tab) => {
+              const isSelected = selectedStatus === tab.value;
+              return (
+                <button
+                  key={tab.value}
+                  type="button"
+                  role="tab"
+                  aria-selected={isSelected}
+                  onClick={() => setSelectedStatus(tab.value)}
+                  className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#234E3D] ${
+                    isSelected
+                      ? "bg-[#234E3D] text-white shadow-xs"
+                      : "bg-white text-[#4A5D52] hover:bg-black/5 hover:text-[#1B382B] border border-[#EFECE4]"
                   }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* State B: No Filter Match Found */}
       {filteredContests.length === 0 ? (

@@ -9,7 +9,6 @@ interface ContestCardProps {
 }
 
 export function ContestCard({ contest }: ContestCardProps) {
-  const dateLabel = getContestDateLabel(contest);
 
   return (
     <article className="group h-full flex flex-col justify-between rounded-3xl bg-white border border-[#EFECE4] p-5 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
@@ -30,13 +29,6 @@ export function ContestCard({ contest }: ContestCardProps) {
               </span>
             )}
           </div>
-
-          {/* Date Label */}
-          {dateLabel && (
-            <span className="text-xs font-medium text-[#5A6D61]">
-              {dateLabel}
-            </span>
-          )}
         </div>
 
         {/* 3. Contest Title (Max 2 lines clamped) */}

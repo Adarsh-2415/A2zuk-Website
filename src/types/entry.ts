@@ -7,6 +7,10 @@ export interface SubmissionFormData {
   guardianName: string;
   email: string;
   phone: string;
+  addressStreet: string;
+  city: string;
+  state: string;
+  pincode: string;
   childDisplayName: string;
   childDateOfBirth: string;
   ageCategory: BabyAgeCategory | "";
@@ -24,6 +28,8 @@ export type PhotoValidationError =
   | "EMPTY_FILE"
   | null;
 
+export type EntryStatus = "pending" | "published" | "rejected" | "flagged" | "removed";
+
 export interface PublicContestantEntry {
   slug: string;
   displayName: string;
@@ -33,8 +39,9 @@ export interface PublicContestantEntry {
   photoAlt?: string;
   publicDescription?: string;
   voteCount?: number | null;
-  status?: "pending" | "published" | "rejected" | "flagged" | "removed";
+  status?: EntryStatus;
   isParentPreview?: boolean;
+  isOwner?: boolean;
 }
 
 export type EntryDisplayStatus =
@@ -46,5 +53,6 @@ export type EntryDisplayStatus =
 export interface ContestEntryDisplayResult {
   entry: PublicContestantEntry | null;
   displayStatus: EntryDisplayStatus;
+  isOwner?: boolean;
 }
 

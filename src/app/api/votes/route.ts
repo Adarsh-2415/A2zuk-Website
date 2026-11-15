@@ -56,7 +56,7 @@ export async function POST(request: Request) {
 
   const { data: entryRow, error: entryError } = await supabase
     .from("entries")
-    .select("id, status, contests!inner(slug, status)")
+    .select("id, status, user_id, contests!inner(slug, status)")
     .eq("public_code", entryCode)
     .eq("contests.slug", contestSlug)
     .eq("status", "published")
@@ -73,6 +73,17 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { ok: false, error: "Contestant entry not found or not open for voting." },
       { status: 404 },
+    );
+  }
+
+  // Anti-Self-Vote: Parents cannot vote for their own entry
+  if (entryRow.user_id && entryRow.user_id === user.id) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Parents cannot vote for their own child's photo. Share with friends to gather votes!",
+      },
+      { status: 403 },
     );
   }
 
@@ -105,9 +116,17 @@ export async function POST(request: Request) {
   if (rpcError || !rpcData || rpcData.length === 0) {
     const msg = rpcError?.message ?? "Unable to record vote.";
     let status = 400;
-    if (msg.includes("Already voted")) status = 409;
-    else if (msg.includes("Daily limit of 5 votes")) status = 429;
-    else if (msg.includes("Entry not found")) status = 404;
+    if (
+      msg.includes("already cast your official vote") ||
+      msg.includes("Already voted") ||
+      msg.includes("idx_votes_unique_user_contest")
+    ) {
+      status = 409;
+    } else if (msg.includes("Parents cannot vote")) {
+      status = 403;
+    } else if (msg.includes("Entry not found")) {
+      status = 404;
+    }
 
     return NextResponse.json({ ok: false, error: msg }, { status });
   }

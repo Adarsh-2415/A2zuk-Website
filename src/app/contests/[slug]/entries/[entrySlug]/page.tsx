@@ -93,7 +93,8 @@ async function ContestEntryContent({
   }
 
   // Look up contestant entry with authenticated parent fallback
-  const { entry, displayStatus } = await getContestEntryForViewer(slug, entrySlug);
+  const { entry, displayStatus, isOwner } = await getContestEntryForViewer(slug, entrySlug);
+  const isParentOwner = Boolean(isOwner || entry?.isOwner);
 
   return (
     <>
@@ -156,19 +157,20 @@ async function ContestEntryContent({
                 <EntryHeroPhoto entry={entry} />
               </div>
 
-              {/* Right Column: Identity, Voting Action, and Policy */}
+              {/* Right Column: Identity, Smart Voting/Sharing Controls */}
               <div className="lg:col-span-7 flex flex-col items-start w-full">
                 <EntryVotingPanel
                   entry={entry}
                   contestTitle={contest.title}
                   contestStatus={contest.status}
+                  isOwner={isParentOwner}
                 />
               </div>
             </div>
           </section>
 
-          {/* Interactive Friendly Family Challenge & Live Card Previewer Studio (published only) */}
-          {displayStatus === "published" && (
+          {/* Interactive Friendly Family Challenge Studio (Hidden for Parents, shown only for public voters) */}
+          {displayStatus === "published" && !isParentOwner && (
             <ContestantChallengeStudio
               challengerName={entry.displayName}
               contestSlug={contest.slug}

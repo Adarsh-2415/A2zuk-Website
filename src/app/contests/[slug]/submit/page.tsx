@@ -5,6 +5,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
 import { getContestBySlug, getPublicContestSlugs } from "@/lib/queries/contests";
+import { createClient as createServerUserClient } from "@/lib/supabase/server";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { EntrySubmitForm } from "@/components/submission/EntrySubmitForm";
 
 export async function generateStaticParams() {
@@ -30,7 +32,7 @@ export async function generateMetadata({
 
   return {
     title: `Submit Entry — ${contest.title} | A2ZUK`,
-    description: `Enter your baby's photo in ${contest.title}. Complete the simple entry form and share their little smile with family and community.`,
+    description: `Submit your baby's photo entry in ${contest.title}. Complete the simple entry form and share their little smile with family and community.`,
   };
 }
 
@@ -41,6 +43,16 @@ async function SubmitEntryContent({
 }) {
   const { slug } = await params;
   const contest = await getContestBySlug(slug);
+
+  // Check if user is signed in with Google
+  let user: { id: string } | null = null;
+  try {
+    const userClient = await createServerUserClient();
+    const { data } = await userClient.auth.getUser();
+    user = data.user;
+  } catch {
+    user = null;
+  }
 
   // Requirement: Only Baby Photo Contest #1 allows access to the submission form.
   const isSubmissionOpen =
@@ -89,6 +101,40 @@ async function SubmitEntryContent({
               >
                 Go to Baby Photo Contest #1
               </Link>
+            </div>
+          </div>
+        </div>
+      ) : !user ? (
+        /* Mandatory Google Sign-in Gate */
+        <div className="w-full py-10 sm:py-16 text-center">
+          <div className="max-w-md mx-auto p-8 sm:p-10 rounded-[32px] bg-white border border-[#EFECE4] shadow-xs space-y-6">
+            <div className="w-16 h-16 mx-auto rounded-full bg-[#234E3D]/10 text-[#234E3D] flex items-center justify-center text-3xl shadow-2xs">
+              🌟
+            </div>
+            <div>
+              <span className="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-[#234E3D]/10 text-[#234E3D] mb-2">
+                100% Free Entry
+              </span>
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#1B382B] tracking-tight">
+                Participate in {contest.title}
+              </h1>
+              <p className="text-xs sm:text-sm text-[#5A6D61] mt-2 leading-relaxed">
+                Please sign in with your Google account to register. Your verified name and email will be linked automatically.
+              </p>
+            </div>
+
+            <div className="pt-2 flex flex-col items-center">
+              <GoogleSignInButton
+                redirectTo={`/contests/${contest.slug}/submit`}
+                label="Sign in with Google to Continue"
+                className="w-full shadow-sm"
+              />
+            </div>
+
+            <div className="pt-4 border-t border-[#F5F2EA] flex flex-wrap justify-center gap-3 text-[11px] text-[#5A6D61]">
+              <span>🔒 Zero Passwords Required</span>
+              <span>•</span>
+              <span>⚡ Fast 1-Click Verification</span>
             </div>
           </div>
         </div>

@@ -24,6 +24,24 @@ export const submissionSchema = z.object({
       "Please enter a valid phone number (at least 10 digits).",
     )
     .refine((val) => val.length <= 24, "Phone number is too long."),
+  addressStreet: z
+    .string()
+    .trim()
+    .min(5, "Please enter your street/house address (at least 5 characters).")
+    .max(200, "Address is too long."),
+  city: z
+    .string()
+    .trim()
+    .min(2, "Please enter your city or district.")
+    .max(80, "City name is too long."),
+  state: z
+    .string()
+    .trim()
+    .min(2, "Please select your state."),
+  pincode: z
+    .string()
+    .trim()
+    .regex(/^[1-9][0-9]{5}$/, "Please enter a valid 6-digit postal pincode."),
   childDisplayName: z
     .string()
     .trim()

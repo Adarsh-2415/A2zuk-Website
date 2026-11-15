@@ -2,6 +2,10 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyModerationToken } from "@/lib/security/moderation-token";
+import {
+  sendParentEntryApprovedEmail,
+  sendParentEntryRejectedEmail,
+} from "@/lib/email/gmail";
 
 const PENDING_PHOTO_BUCKET = "contest-photos-pending";
 const PUBLIC_PHOTO_BUCKET = "contest-photos-public";
@@ -57,6 +61,13 @@ export async function POST(request: Request) {
   }
 
   const contestSlug = (entry.contests as { slug: string }).slug;
+
+  // Fetch private guardian details to notify parent
+  const { data: privateDetails } = await admin
+    .from("entry_private_details")
+    .select("guardian_name, guardian_email")
+    .eq("entry_id", entry.id)
+    .maybeSingle();
 
   // Idempotency: If already moderated to target state
   if (entry.status === "published" && action === "approve") {
@@ -144,6 +155,22 @@ export async function POST(request: Request) {
     revalidatePath(`/contests/${contestSlug}`);
     revalidatePath(`/contests/${contestSlug}/entries/${entry.public_code}`);
 
+    // Dispatch approval email to parent asynchronously
+    if (privateDetails?.guardian_email) {
+      sendParentEntryApprovedEmail({
+        babyName: entry.baby_name,
+        guardianName: privateDetails.guardian_name || "Parent",
+        guardianEmail: privateDetails.guardian_email,
+        contestSlug,
+        publicCode: entry.public_code,
+      }).catch((emailErr) => {
+        console.error(
+          "[Moderate API] Failed to send parent approval email:",
+          emailErr,
+        );
+      });
+    }
+
     return NextResponse.json({
       ok: true,
       status: "published",
@@ -180,6 +207,22 @@ export async function POST(request: Request) {
     revalidatePath("/");
     revalidatePath(`/contests/${contestSlug}`);
     revalidatePath(`/contests/${contestSlug}/entries/${entry.public_code}`);
+
+    // Dispatch rejection/revision email to parent asynchronously
+    if (privateDetails?.guardian_email) {
+      sendParentEntryRejectedEmail({
+        babyName: entry.baby_name,
+        guardianName: privateDetails.guardian_name || "Parent",
+        guardianEmail: privateDetails.guardian_email,
+        contestSlug,
+        rejectionReason: "Quality or safety review guidelines",
+      }).catch((emailErr) => {
+        console.error(
+          "[Moderate API] Failed to send parent rejection email:",
+          emailErr,
+        );
+      });
+    }
 
     return NextResponse.json({
       ok: true,

@@ -57,7 +57,7 @@ export default function PrivacyPolicyPage() {
             <li>
               <strong>Voting and integrity information:</strong> Network and device
               identifiers (such as IP addresses, browser headers, and submission
-              timestamps) necessary to enforce the five-votes-per-day limit and
+              timestamps) necessary to enforce the one-vote-per-contest policy and
               protect against automated manipulation.
             </li>
             <li>
@@ -166,8 +166,8 @@ export default function PrivacyPolicyPage() {
       content: (
         <p>
           A2ZUK uses essential functional cookies and session storage strictly
-          necessary to operate navigation, maintain security integrity, and monitor
-          daily voting thresholds. We do not currently deploy third-party advertising
+          necessary to operate navigation, maintain security integrity, and ensure
+          authentic voting participation. We do not currently deploy third-party advertising
           trackers or marketing analytics scripts.
         </p>
       ),

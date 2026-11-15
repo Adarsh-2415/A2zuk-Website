@@ -5,7 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 
-export function MobileNav() {
+interface MobileNavProps {
+  user?: { email?: string; name?: string } | null;
+}
+
+export function MobileNav({ user }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const menuRef = useRef<HTMLDivElement>(null);
@@ -43,6 +47,7 @@ export function MobileNav() {
     { title: "Home", href: "/" },
     { title: "The Contest", href: "/contests" },
     { title: "How It Works", href: "/how-it-works" },
+    { title: "My Profile", href: "/profile" },
     { title: "Help & FAQs", href: "/help" },
     { title: "Contest Rules & Terms", href: "/terms" },
     { title: "Privacy Policy", href: "/privacy-policy" },
@@ -87,6 +92,33 @@ export function MobileNav() {
           id="mobile-nav-panel"
           className="absolute right-0 top-12 w-[calc(100vw-2rem)] max-w-sm rounded-3xl bg-gradient-to-b from-[#FAF8F5]/98 via-[#FDF9F4]/98 to-[#FDF2EC]/98 backdrop-blur-2xl border border-[#EAE2D2]/80 shadow-2xl p-5 space-y-4 z-50 ring-1 ring-black/5 animate-in fade-in slide-in-from-top-2 duration-200 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)]"
         >
+          {/* User Status Card */}
+          {user ? (
+            <Link
+              href="/profile"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 p-3 rounded-2xl bg-[#234E3D]/8 border border-[#234E3D]/15 text-[#1B382B] transition-all hover:bg-[#234E3D]/12"
+            >
+              <span className="w-8 h-8 rounded-full bg-[#234E3D] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                {user.name ? user.name[0]?.toUpperCase() : "👤"}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-[#1B382B] truncate">{user.name || "My Account"}</p>
+                <p className="text-[11px] text-[#5A6D61] truncate">{user.email}</p>
+              </div>
+              <span className="text-xs font-semibold text-[#234E3D]">My Profile →</span>
+            </Link>
+          ) : (
+            <Link
+              href="/profile"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center justify-between p-3 rounded-2xl bg-[#FAF8F5] border border-[#EFECE4] text-xs font-semibold text-[#1B382B] hover:bg-[#F2EFE8]"
+            >
+              <span>Parent Login / My Profile</span>
+              <span className="text-[#234E3D]">Sign In →</span>
+            </Link>
+          )}
+
           {/* Navigation Items */}
           <div className="flex flex-col space-y-1">
             {navLinks.map((item) => {
@@ -120,7 +152,7 @@ export function MobileNav() {
               onClick={() => setIsOpen(false)}
               className="w-full inline-flex items-center justify-center px-5 py-3 rounded-full text-sm font-semibold text-white bg-[#234E3D] hover:bg-[#1A3B2E] active:scale-95 transition-all shadow-sm"
             >
-              Enter your baby
+              Participate Now
             </Link>
           </div>
         </div>

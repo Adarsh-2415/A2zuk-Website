@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-export type ContestStatus = "active" | "upcoming" | "ended";
+export type ContestStatus = "active" | "upcoming" | "ended" | "archived";
 export type ContestAccent = "hero" | "peach" | "lavender" | "sage";
 export type BabyAgeCategory =
   | "under-6-months"
@@ -264,6 +264,8 @@ export interface Database {
           consented_at: string;
           purged_at: string | null;
           purge_reason: string | null;
+          address_street: string | null;
+          pincode: string | null;
           created_at: string;
         };
         Insert: {
@@ -279,6 +281,8 @@ export interface Database {
           consented_at?: string;
           purged_at?: string | null;
           purge_reason?: string | null;
+          address_street?: string | null;
+          pincode?: string | null;
           created_at?: string;
         };
         Update: {
@@ -294,6 +298,8 @@ export interface Database {
           consented_at?: string;
           purged_at?: string | null;
           purge_reason?: string | null;
+          address_street?: string | null;
+          pincode?: string | null;
           created_at?: string;
         };
         Relationships: [
@@ -588,6 +594,8 @@ export interface Database {
           p_consent_rules: boolean;
           p_consent_ip_hash: string;
           p_user_id?: string | null;
+          p_address_street?: string | null;
+          p_pincode?: string | null;
         };
         Returns: {
           entry_id: string;

@@ -250,13 +250,21 @@ export function CelebrationScreen({
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           {/* Primary Action: View Entry Page if code exists, otherwise explore contests */}
           {publicCode ? (
-            <Link
-              href={`/contests/${contestSlug}/entries/${publicCode}`}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-full text-sm font-bold text-white bg-[#234E3D] hover:bg-[#1A3B2E] active:scale-[0.99] transition-all duration-200 shadow-xs hover:shadow-md text-center inline-flex items-center justify-center gap-1.5"
-            >
-              <span>View Baby&apos;s Entry Page</span>
-              <span>→</span>
-            </Link>
+            <>
+              <Link
+                href={`/contests/${contestSlug}/entries/${publicCode}`}
+                className="w-full sm:w-auto px-6 py-3.5 rounded-full text-sm font-bold text-white bg-[#234E3D] hover:bg-[#1A3B2E] active:scale-[0.99] transition-all duration-200 shadow-xs hover:shadow-md text-center inline-flex items-center justify-center gap-1.5"
+              >
+                <span>View Baby&apos;s Entry Page</span>
+                <span>→</span>
+              </Link>
+              <Link
+                href="/profile"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-full text-sm font-semibold text-[#1B382B] bg-[#FAF8F5] border border-[#E8DFC8] hover:bg-[#F0ECE1] active:scale-[0.99] transition-all duration-200 text-center inline-flex items-center justify-center gap-1.5"
+              >
+                <span>View My Profile</span>
+              </Link>
+            </>
           ) : (
             <Link
               href="/contests"

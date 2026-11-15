@@ -53,42 +53,6 @@ export const CONTESTS: Contest[] = [
       ],
     },
   },
-  {
-    id: "contest-002",
-    slug: "toddler-play-giggles",
-    title: "Toddler Play & Giggles Contest",
-    shortDescription:
-      "Capturing the joyful energy, curious steps, and infectious giggles of toddlers aged 1 to 3 years across the UK.",
-    status: "upcoming",
-    startDate: "2026-11-20",
-    endDate: "2026-12-25",
-    coverVariant: "lavender",
-    isFeatured: false,
-  },
-  {
-    id: "contest-003",
-    slug: "little-explorers-dress-up",
-    title: "Little Explorers Dress-Up Contest",
-    shortDescription:
-      "Cosy knitwear, delightful outfits, and creative little looks that showcase your young explorer's blooming personality.",
-    status: "upcoming",
-    startDate: "2027-01-05",
-    endDate: "2027-02-15",
-    coverVariant: "hero",
-    isFeatured: false,
-  },
-  {
-    id: "contest-004",
-    slug: "newborn-first-smiles",
-    title: "Newborn First Smiles Contest",
-    shortDescription:
-      "Cherishing those peaceful early weeks, gentle yawns, and heartwarming first smiles of newborn babies up to six months.",
-    status: "ended",
-    startDate: "2026-08-01",
-    endDate: "2026-09-20",
-    coverVariant: "sage",
-    isFeatured: false,
-  },
 ];
 
 /**
@@ -102,6 +66,7 @@ export function sortContests(contests: Contest[]): Contest[] {
     active: 1,
     upcoming: 2,
     ended: 3,
+    archived: 4,
   };
 
   return [...contests].sort((a, b) => {
@@ -160,8 +125,8 @@ export function formatContestDate(dateStr?: string): string {
  * Returns formatted status date display string
  */
 export function getContestDateLabel(contest: Contest): string {
-  if (contest.status === "active" && contest.endDate) {
-    return `Ends ${formatContestDate(contest.endDate)}`;
+  if (contest.status === "active") {
+    return "";
   }
   if (contest.status === "upcoming" && contest.startDate) {
     return `Starts ${formatContestDate(contest.startDate)}`;

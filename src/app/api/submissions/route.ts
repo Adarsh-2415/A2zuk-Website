@@ -3,7 +3,10 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { extractClientIp, hashWithIpSalt } from "@/lib/security/hash";
-import { sendModerationAlertEmail } from "@/lib/email/gmail";
+import {
+  sendModerationAlertEmail,
+  sendParentSubmissionReceivedEmail,
+} from "@/lib/email/gmail";
 import {
   PhotoProcessingError,
   sanitizeSubmissionPhoto,
@@ -40,6 +43,10 @@ export async function POST(request: Request) {
     guardianName: String(formData.get("guardianName") ?? ""),
     email: String(formData.get("email") ?? ""),
     phone: String(formData.get("phone") ?? ""),
+    addressStreet: String(formData.get("addressStreet") ?? ""),
+    city: String(formData.get("city") ?? ""),
+    state: String(formData.get("state") ?? ""),
+    pincode: String(formData.get("pincode") ?? ""),
     childDisplayName: String(formData.get("childDisplayName") ?? ""),
     childDateOfBirth: String(formData.get("childDateOfBirth") ?? ""),
     ageCategory: String(formData.get("ageCategory") ?? ""),
@@ -90,15 +97,24 @@ export async function POST(request: Request) {
   const clientIp = extractClientIp(request.headers);
   const consentIpHash = hashWithIpSalt(clientIp);
 
-  // Optional: link entry to verified parent Google account if signed in
+  // Mandatory authentication: Parent must be verified with Google to submit
   let authUserId: string | null = null;
   try {
     const userClient = await createClient();
     const { data: { user } } = await userClient.auth.getUser();
     authUserId = user?.id ?? null;
   } catch {
-    // Graceful fallback to unlinked entry if session read fails
     authUserId = null;
+  }
+
+  if (!authUserId) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Please sign in with Google to submit your entry.",
+      },
+      { status: 401 },
+    );
   }
 
   // Basic per-IP submission rate limiting (1-hour rolling window)
@@ -149,8 +165,8 @@ export async function POST(request: Request) {
       p_public_code: publicCode,
       p_baby_name: parsed.data.childDisplayName,
       p_age_category: parsed.data.ageCategory,
-      p_city: "",
-      p_state: "",
+      p_city: parsed.data.city,
+      p_state: parsed.data.state,
       p_caption: "",
       p_pending_photo_path: pendingPhotoPath,
       p_guardian_name: parsed.data.guardianName,
@@ -162,6 +178,8 @@ export async function POST(request: Request) {
       p_consent_rules: parsed.data.consentRules,
       p_consent_ip_hash: consentIpHash,
       p_user_id: authUserId,
+      p_address_street: parsed.data.addressStreet,
+      p_pincode: parsed.data.pincode,
     });
 
     if (!error && data && data.length > 0) {
@@ -198,7 +216,23 @@ export async function POST(request: Request) {
     );
   }
 
-  // Generate 7-day signed photo URL for email preview & dispatch email notification asynchronously
+  // 1. Dispatch confirmation email to parent asynchronously
+  sendParentSubmissionReceivedEmail({
+    babyName: parsed.data.childDisplayName,
+    guardianName: parsed.data.guardianName,
+    guardianEmail: parsed.data.email,
+    ageCategory: parsed.data.ageCategory,
+    city: `${parsed.data.city}, ${parsed.data.state}`,
+    contestSlug: parsed.data.contestSlug,
+    publicCode: rpcData[0].public_code,
+  }).catch((parentEmailErr) => {
+    console.error(
+      "[POST /api/submissions] Background parent confirmation email failed:",
+      parentEmailErr,
+    );
+  });
+
+  // 2. Generate 7-day signed photo URL for email preview & dispatch admin moderation email asynchronously
   supabase.storage
     .from(PENDING_PHOTO_BUCKET)
     .createSignedUrl(pendingPhotoPath, 7 * 24 * 3600)
@@ -207,7 +241,7 @@ export async function POST(request: Request) {
         entryId: rpcData[0].entry_id,
         babyName: parsed.data.childDisplayName,
         ageCategory: parsed.data.ageCategory,
-        city: "",
+        city: `${parsed.data.city}, ${parsed.data.state}`,
         guardianName: parsed.data.guardianName,
         guardianEmail: parsed.data.email,
         photoSignedUrl: signedPhoto?.signedUrl || "",

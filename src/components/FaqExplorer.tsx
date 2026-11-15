@@ -91,16 +91,16 @@ const FAQS_DATA: FaqItem[] = [
   {
     id: "vote-1",
     category: "Voting",
-    question: "How many votes can I cast each day?",
+    question: "How many votes can I cast in the contest?",
     answer:
-      "The planned limit is five votes per day in total across all contest entries.",
+      "Under our official election voting system, each verified Google account receives exactly 1 official vote in the contest.",
   },
   {
     id: "vote-2",
     category: "Voting",
-    question: "Can I vote for different entries?",
+    question: "Can I change my vote after casting it?",
     answer:
-      "The planned limit applies across entries rather than giving five votes to every individual photo. The exact rules for repeat votes and how the daily limit resets should be specified in the voting interface.",
+      "No. In accordance with election principles, once you cast your vote for a contestant, your ballot is permanently sealed and cannot be changed or transferred to another child.",
   },
   {
     id: "vote-3",
@@ -225,11 +225,10 @@ export default function FaqExplorer() {
           role="tab"
           aria-selected={selectedCategory === "All"}
           onClick={() => setSelectedCategory("All")}
-          className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
-            selectedCategory === "All"
+          className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${selectedCategory === "All"
               ? "bg-[#234E3D] text-white shadow-xs"
               : "bg-white text-[#4A5D52] hover:bg-black/5 border border-[#EFECE4]"
-          }`}
+            }`}
         >
           All Questions
         </button>
@@ -240,11 +239,10 @@ export default function FaqExplorer() {
             role="tab"
             aria-selected={selectedCategory === category}
             onClick={() => setSelectedCategory(category)}
-            className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
-              selectedCategory === category
+            className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${selectedCategory === category
                 ? "bg-[#234E3D] text-white shadow-xs"
                 : "bg-white text-[#4A5D52] hover:bg-black/5 border border-[#EFECE4]"
-            }`}
+              }`}
           >
             {category}
           </button>
@@ -273,9 +271,8 @@ export default function FaqExplorer() {
                     {faq.question}
                   </span>
                   <span
-                    className={`w-7 h-7 rounded-full flex items-center justify-center bg-[#FAF8F5] text-[#1B382B] shrink-0 transition-transform duration-200 ${
-                      isOpen ? "rotate-180 bg-[#EFECE4]" : ""
-                    }`}
+                    className={`w-7 h-7 rounded-full flex items-center justify-center bg-[#FAF8F5] text-[#1B382B] shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180 bg-[#EFECE4]" : ""
+                      }`}
                     aria-hidden="true"
                   >
                     <svg

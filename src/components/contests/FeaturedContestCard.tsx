@@ -9,8 +9,6 @@ interface FeaturedContestCardProps {
 }
 
 export function FeaturedContestCard({ contest }: FeaturedContestCardProps) {
-  const dateLabel = getContestDateLabel(contest);
-
   return (
     <article className="group w-full rounded-3xl bg-white border border-[#EFECE4] shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden p-6 sm:p-8">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
@@ -28,11 +26,6 @@ export function FeaturedContestCard({ contest }: FeaturedContestCardProps) {
                 Featured Contest
               </span>
               <ContestStatusBadge status={contest.status} />
-              {dateLabel && (
-                <span className="text-xs font-semibold text-[#5A6D61] ml-auto">
-                  {dateLabel}
-                </span>
-              )}
             </div>
 
             {/* Title */}

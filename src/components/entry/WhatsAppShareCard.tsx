@@ -22,7 +22,7 @@ export default function WhatsAppShareCard({
     if (isPending) {
       return `🌟 Meet our little one ${babyName} in the A2ZUK Baby Contest! Our photo is currently being reviewed, bookmark this link to vote once live: ${url}`;
     }
-    return `🌟 Please support our little one ${babyName} in the A2ZUK Baby Photo Contest! Tap this link to cast your free daily vote (takes 10 seconds): ${url}`;
+    return `🌟 Please support our little one ${babyName} in the A2ZUK Baby Photo Contest! Tap this link to cast your official vote (takes 10 seconds): ${url}`;
   };
 
   const handleWhatsAppClick = () => {
@@ -55,29 +55,49 @@ export default function WhatsAppShareCard({
               Share with Family & Friends
             </h4>
             <p className="text-[11px] text-[#5A6D61]">
-              Every verified Google account gets 5 free votes daily (IST)
+              Every verified Google account gets 1 official vote in the contest
             </p>
           </div>
         </div>
 
-        {isPending && (
-          <span className="text-[10px] font-bold text-[#92400E] bg-[#FEF3C7] border border-[#FCD34D] px-2 py-0.5 rounded-full">
-            Ready to Share
+        {isPending ? (
+          <span className="text-[10px] font-bold text-[#92400E] bg-[#FEF3C7] border border-[#FCD34D] px-2.5 py-1 rounded-full flex items-center gap-1">
+            <span>🔒</span>
+            <span>Locked During Review</span>
+          </span>
+        ) : (
+          <span className="text-[10px] font-bold text-[#234E3D] bg-[#234E3D]/10 border border-[#234E3D]/20 px-2.5 py-1 rounded-full flex items-center gap-1">
+            <span>✓</span>
+            <span>Ready to Share</span>
           </span>
         )}
       </div>
 
-      {/* Message Quote Box */}
-      <div className="p-3.5 rounded-xl bg-white border border-[#EFECE4] text-xs text-[#1B382B] leading-relaxed italic relative">
-        &ldquo;Please support our little one {babyName} in the A2ZUK Baby Photo Contest! Tap to cast your free daily vote…&rdquo;
-      </div>
+      {isPending ? (
+        <div className="p-3.5 rounded-xl bg-[#FEF3C7]/40 border border-[#FCD34D]/60 text-xs text-[#92400E] leading-relaxed flex items-start gap-2">
+          <span className="shrink-0 mt-0.5">ℹ️</span>
+          <span>
+            <strong>Sharing Locked During Review:</strong> This entry is currently undergoing moderation. WhatsApp sharing and link copying will unlock automatically once our team verifies and approves the entry.
+          </span>
+        </div>
+      ) : (
+        /* Message Quote Box */
+        <div className="p-3.5 rounded-xl bg-white border border-[#EFECE4] text-xs text-[#1B382B] leading-relaxed italic relative">
+          &ldquo;Please support our little one {babyName} in the A2ZUK Baby Photo Contest! Tap to cast your official vote…&rdquo;
+        </div>
+      )}
 
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
         <button
           type="button"
+          disabled={isPending}
           onClick={handleWhatsAppClick}
-          className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs sm:text-sm font-bold bg-[#25D366] hover:bg-[#20BD5A] text-white transition-all shadow-xs hover:shadow-sm cursor-pointer"
+          className={`flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs sm:text-sm font-bold transition-all shadow-xs ${isPending
+            ? "bg-[#EFECE4] text-[#8C9B90] cursor-not-allowed border border-[#DFDCD2]"
+            : "bg-[#25D366] hover:bg-[#20BD5A] text-white cursor-pointer hover:shadow-sm"
+            }`}
+          title={isPending ? "Sharing unlocks once entry is approved" : "Share on WhatsApp"}
         >
           <svg
             className="w-4 h-4 fill-current"
@@ -86,15 +106,20 @@ export default function WhatsAppShareCard({
           >
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
           </svg>
-          <span>Share on WhatsApp</span>
+          <span>{isPending ? "Sharing Locked (Under Review)" : "Share on WhatsApp"}</span>
         </button>
 
         <button
           type="button"
+          disabled={isPending}
           onClick={handleCopyLink}
-          className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-full text-xs font-semibold bg-white border border-[#EFECE4] text-[#1B382B] hover:bg-[#FAF8F5] transition-colors"
+          className={`inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-full text-xs font-semibold transition-colors ${isPending
+            ? "bg-[#F5F2EA] text-[#8C9B90] cursor-not-allowed border border-[#DFDCD2]"
+            : "bg-white border border-[#EFECE4] text-[#1B382B] hover:bg-[#FAF8F5] cursor-pointer"
+            }`}
+          title={isPending ? "Link copying unlocks once entry is approved" : "Copy Message"}
         >
-          <span>{copied ? "Copied! ✓" : "Copy Message"}</span>
+          <span>{isPending ? "Copy Locked" : copied ? "Copied! ✓" : "Copy Message"}</span>
         </button>
       </div>
     </div>
