@@ -21,10 +21,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       ok: true,
       isAuthenticated: false,
-      hasVotedInContest: false,
       hasVotedForThisEntry: false,
-      votedForEntryCode: null,
-      votedForBabyName: null,
       isParentOwner: false,
     });
   }
@@ -45,8 +42,9 @@ export async function GET(request: Request) {
     );
   }
 
-  // Check if the current user is the parent owner of this entry
   let isParentOwner = false;
+  let hasVotedForThisEntry = false;
+
   if (entryCode) {
     const { data: currentEntry } = await supabase
       .from("entries")
@@ -55,52 +53,29 @@ export async function GET(request: Request) {
       .eq("contest_id", contestRow.id)
       .maybeSingle();
 
-    if (currentEntry?.user_id && currentEntry.user_id === user.id) {
-      isParentOwner = true;
+    if (currentEntry) {
+      if (currentEntry.user_id && currentEntry.user_id === user.id) {
+        isParentOwner = true;
+      }
+
+      // Option B: Check if this user has already cast a vote for THIS specific entry
+      const { data: existingVote } = await supabase
+        .from("votes")
+        .select("id")
+        .eq("entry_id", currentEntry.id)
+        .eq("user_id", user.id)
+        .in("status", ["valid", "quarantined"])
+        .maybeSingle();
+
+      hasVotedForThisEntry = Boolean(existingVote);
     }
   }
-
-  // Check if voter has cast their 1 official vote in this contest
-  const { data: existingVote, error: voteError } = await supabase
-    .from("votes")
-    .select(
-      `
-      id,
-      entry_id,
-      entries!inner (
-        public_code,
-        baby_name
-      )
-    `,
-    )
-    .eq("contest_id", contestRow.id)
-    .eq("user_id", user.id)
-    .in("status", ["valid", "quarantined"])
-    .maybeSingle();
-
-  if (voteError) {
-    console.error("[votes/status] Error querying votes:", voteError.message);
-  }
-
-  const hasVotedInContest = Boolean(existingVote);
-  const typedEntry = existingVote?.entries as unknown as
-    | { public_code: string; baby_name: string }
-    | undefined;
-
-  const votedForEntryCode = typedEntry?.public_code ?? null;
-  const votedForBabyName = typedEntry?.baby_name ?? null;
-  const hasVotedForThisEntry = Boolean(
-    entryCode && votedForEntryCode && entryCode === votedForEntryCode,
-  );
 
   return NextResponse.json({
     ok: true,
     isAuthenticated: true,
     userEmail: user.email,
-    hasVotedInContest,
     hasVotedForThisEntry,
-    votedForEntryCode,
-    votedForBabyName,
     isParentOwner,
   });
 }

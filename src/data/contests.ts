@@ -14,7 +14,7 @@ export const CONTESTS: Contest[] = [
       "Celebrate your little one's big story. Share their happiest smile, let your community cheer them on, and participate in our inaugural online baby photo contest.",
     status: "active",
     startDate: "2026-10-01",
-    endDate: "2026-11-15",
+    endDate: "2027-12-31",
     coverVariant: "peach",
     isFeatured: true,
     prizeStructure: {

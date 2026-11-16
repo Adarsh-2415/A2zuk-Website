@@ -26,6 +26,7 @@ function formatAgeCategory(category: string): string {
 export default function ProfileDashboard({ initialData }: ProfileDashboardProps) {
   const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const { user, privateDetails, entries } = initialData;
 
   const handleSignOut = async () => {
@@ -46,27 +47,23 @@ export default function ProfileDashboard({ initialData }: ProfileDashboardProps)
       <section className="w-full rounded-[28px] sm:rounded-[36px] bg-white border border-[#EFECE4] p-6 sm:p-10 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div className="flex items-center gap-4 sm:gap-5">
           {/* Avatar or Initials */}
-          {user.avatarUrl ? (
+          {user.avatarUrl && !avatarError ? (
             <img
               src={user.avatarUrl}
-              alt={user.name}
+              alt=""
+              onError={() => setAvatarError(true)}
               className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#EFECE4] object-cover shadow-2xs"
             />
           ) : (
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#234E3D] text-white flex items-center justify-center text-2xl sm:text-3xl font-bold shadow-2xs">
-              {user.name.charAt(0).toUpperCase()}
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#234E3D] text-white flex items-center justify-center text-2xl sm:text-3xl font-bold shadow-2xs select-none">
+              {(user.name || "P").charAt(0).toUpperCase()}
             </div>
           )}
 
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-[#1B382B] tracking-tight">
-                {user.name}
-              </h1>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#234E3D]/10 text-[#234E3D]">
-                <span>✓</span> Verified Parent
-              </span>
-            </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#1B382B] tracking-tight">
+              {user.name}
+            </h1>
             <p className="text-xs sm:text-sm text-[#5A6D61] mt-0.5">
               {user.email}
             </p>
@@ -106,7 +103,7 @@ export default function ProfileDashboard({ initialData }: ProfileDashboardProps)
             )}
             {privateDetails.addressStreet && (
               <div>
-                <span className="font-semibold text-[#1B382B] block">Certificate Delivery Address:</span>
+                <span className="font-semibold text-[#1B382B] block">Address:</span>
                 <span>
                   {privateDetails.addressStreet}
                   {privateDetails.city && `, ${privateDetails.city}`}

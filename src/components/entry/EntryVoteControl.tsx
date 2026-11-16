@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ShareEntryButton from "./ShareEntryButton";
 import { VoterAuthModal } from "./VoterAuthModal";
 
 interface EntryVoteControlProps {
@@ -21,9 +20,7 @@ export default function EntryVoteControl({
 }: EntryVoteControlProps) {
   const [voteCount, setVoteCount] = useState(initialVoteCount);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [hasVotedInContest, setHasVotedInContest] = useState(false);
   const [hasVotedForThisEntry, setHasVotedForThisEntry] = useState(false);
-  const [votedForBabyName, setVotedForBabyName] = useState<string | null>(null);
   const [isParentOwner, setIsParentOwner] = useState(false);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -44,7 +41,7 @@ export default function EntryVoteControl({
     if (!isVotingOpen) return;
 
     let cancelled = false;
-    async function loadElectionStatus() {
+    async function loadVoteStatus() {
       try {
         const res = await fetch(
           `/api/votes/status?contestSlug=${encodeURIComponent(
@@ -56,23 +53,15 @@ export default function EntryVoteControl({
         const data = (await res.json()) as {
           ok?: boolean;
           isAuthenticated?: boolean;
-          hasVotedInContest?: boolean;
           hasVotedForThisEntry?: boolean;
-          votedForBabyName?: string | null;
           isParentOwner?: boolean;
         };
         if (!cancelled && data.ok) {
           if (typeof data.isAuthenticated === "boolean") {
             setIsAuthenticated(data.isAuthenticated);
           }
-          if (typeof data.hasVotedInContest === "boolean") {
-            setHasVotedInContest(data.hasVotedInContest);
-          }
           if (typeof data.hasVotedForThisEntry === "boolean") {
             setHasVotedForThisEntry(data.hasVotedForThisEntry);
-          }
-          if (data.votedForBabyName) {
-            setVotedForBabyName(data.votedForBabyName);
           }
           if (typeof data.isParentOwner === "boolean") {
             setIsParentOwner(data.isParentOwner);
@@ -87,14 +76,14 @@ export default function EntryVoteControl({
       }
     }
 
-    loadElectionStatus();
+    loadVoteStatus();
     return () => {
       cancelled = true;
     };
   }, [contestSlug, entryCode, isVotingOpen]);
 
   function handleInitiateVote() {
-    if (!isVotingOpen || isSubmitting || hasVotedInContest || isParentOwner) {
+    if (!isVotingOpen || isSubmitting || hasVotedForThisEntry || isParentOwner) {
       return;
     }
 
@@ -104,7 +93,7 @@ export default function EntryVoteControl({
       return;
     }
 
-    // Step 2: Show Election Confirmation modal before permanently sealing ballot
+    // Step 2: Show Confirmation modal before casting vote
     setIsConfirmModalOpen(true);
   }
 
@@ -134,8 +123,7 @@ export default function EntryVoteControl({
           return;
         }
 
-        if (res.status === 409) {
-          setHasVotedInContest(true);
+      if (res.status === 409) {
           setHasVotedForThisEntry(true);
         }
 
@@ -149,12 +137,10 @@ export default function EntryVoteControl({
       if (typeof data.newVoteCount === "number") {
         setVoteCount(data.newVoteCount);
       }
-      setHasVotedInContest(true);
       setHasVotedForThisEntry(true);
-      setVotedForBabyName(displayName);
       setFeedback({
         type: "success",
-        message: `Your 1 official vote has been cast and recorded for ${displayName}!`,
+        message: `Your vote has been cast and recorded for ${displayName}!`,
       });
     } catch {
       setFeedback({
@@ -169,20 +155,16 @@ export default function EntryVoteControl({
   const isDisabled =
     !isVotingOpen ||
     isSubmitting ||
-    hasVotedInContest ||
+    hasVotedForThisEntry ||
     isParentOwner;
 
   let buttonLabel = `Cast Vote for ${displayName}`;
   if (!isVotingOpen) {
     buttonLabel = "Voting Closed";
   } else if (isSubmitting) {
-    buttonLabel = "Sealing Ballot…";
+    buttonLabel = "Recording Vote…";
   } else if (hasVotedForThisEntry) {
-    buttonLabel = "Ballot Cast for " + displayName + " ✓";
-  } else if (hasVotedInContest) {
-    buttonLabel = votedForBabyName
-      ? `Voted for ${votedForBabyName}`
-      : "Ballot Already Cast";
+    buttonLabel = `Voted for ${displayName} ✓`;
   } else if (isParentOwner) {
     buttonLabel = "Parent View (Cannot Self-Vote)";
   }
@@ -193,9 +175,8 @@ export default function EntryVoteControl({
       <div className="animate-hero-desc w-full max-w-md p-4 rounded-2xl bg-[#FAF8F5] border border-[#EFECE4] flex items-center justify-between mb-5">
         <div className="flex items-center gap-2.5">
           <span
-            className={`w-2.5 h-2.5 rounded-full ${
-              isVotingOpen ? "bg-[#234E3D]" : "bg-[#5A6D61]/40"
-            }`}
+            className={`w-2.5 h-2.5 rounded-full ${isVotingOpen ? "bg-[#234E3D]" : "bg-[#5A6D61]/40"
+              }`}
             aria-hidden="true"
           />
           <span className="text-xs sm:text-sm font-semibold text-[#1B382B]">
@@ -209,31 +190,25 @@ export default function EntryVoteControl({
 
       {/* Primary Vote & Share Action Controls */}
       <div className="w-full flex flex-col gap-3">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          <button
-            type="button"
-            disabled={isDisabled}
-            aria-disabled={isDisabled}
-            onClick={handleInitiateVote}
-            className={`flex-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-sm sm:text-base font-bold transition-all duration-200 select-none ${
-              isDisabled
-                ? "bg-[#234E3D]/50 text-white/90 cursor-not-allowed shadow-none"
-                : "bg-[#234E3D] hover:bg-[#1A3B2E] text-white hover:-translate-y-0.5 active:translate-y-0 active:scale-95 shadow-sm hover:shadow-md cursor-pointer"
+        <button
+          type="button"
+          disabled={isDisabled}
+          aria-disabled={isDisabled}
+          onClick={handleInitiateVote}
+          className={`w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-sm sm:text-base font-bold transition-all duration-200 select-none ${isDisabled
+              ? "bg-[#234E3D]/50 text-white/90 cursor-not-allowed shadow-none"
+              : "bg-[#234E3D] hover:bg-[#1A3B2E] text-white hover:-translate-y-0.5 active:translate-y-0 active:scale-95 shadow-sm hover:shadow-md cursor-pointer"
             }`}
-          >
-            <span>{buttonLabel}</span>
-          </button>
+        >
+          <span>{buttonLabel}</span>
+        </button>
 
-          <ShareEntryButton title={displayName} />
-        </div>
-
-        {/* Status feedback & Election helper microcopy */}
+        {/* Status feedback & helper microcopy */}
         {feedback ? (
           <p
             role={feedback.type === "error" ? "alert" : "status"}
-            className={`text-xs font-semibold ${
-              feedback.type === "error" ? "text-red-600" : "text-[#234E3D]"
-            }`}
+            className={`text-xs font-semibold ${feedback.type === "error" ? "text-red-600" : "text-[#234E3D]"
+              }`}
           >
             {feedback.message}
           </p>
@@ -242,17 +217,13 @@ export default function EntryVoteControl({
             {!isVotingOpen ? (
               "Voting is only open while the contest is active."
             ) : isLoadingStatus ? (
-              "Checking election ballot status…"
+              "Checking voting status…"
             ) : isParentOwner ? (
               "🔒 Parents cannot vote for their own child. Share this entry to gather votes from family and friends!"
             ) : hasVotedForThisEntry ? (
-              "✅ Your official ballot is sealed for this contestant."
-            ) : hasVotedInContest ? (
-              `🔒 You have already cast your 1 official vote in this contest${
-                votedForBabyName ? ` for ${votedForBabyName}` : ""
-              }. Ballots cannot be changed.`
+              `✅ Your official vote is recorded for ${displayName}.`
             ) : (
-              "🗳️ Election Rule: 1 official vote per verified Google account for the entire contest."
+              "🌟 Voting Rule: 1 vote per contestant per verified Google account."
             )}
           </p>
         )}
@@ -266,7 +237,7 @@ export default function EntryVoteControl({
         redirectTo={currentPath}
       />
 
-      {/* Election Ballot Confirmation Modal */}
+      {/* Vote Confirmation Modal */}
       {isConfirmModalOpen && (
         <div
           role="dialog"
@@ -284,7 +255,7 @@ export default function EntryVoteControl({
                 id="confirm-vote-title"
                 className="text-xl sm:text-2xl font-bold text-[#1B382B] tracking-tight"
               >
-                Confirm Your 1 Official Vote
+                Confirm Your Vote for {displayName}
               </h2>
               <p className="text-xs sm:text-sm text-[#4A5D52] mt-2 leading-relaxed">
                 You are casting your official vote for <strong>{displayName}</strong>.
@@ -293,10 +264,10 @@ export default function EntryVoteControl({
 
             <div className="p-3.5 rounded-2xl bg-[#FAF8F5] border border-[#EFECE4] text-xs text-[#5A6D61] text-left space-y-1.5">
               <p className="font-bold text-[#1B382B]">
-                ⚖️ Official Election Rule:
+                ⚖️ Official Voting Rule:
               </p>
               <p>
-                Each verified Google account gets <strong>exactly 1 vote per contest</strong>. Once cast, your ballot is permanently sealed and cannot be changed or transferred to another child.
+                Each verified Google account gets <strong>1 vote per baby</strong>. Once cast, your vote for <strong>{displayName}</strong> cannot be undone.
               </p>
             </div>
 
@@ -306,7 +277,7 @@ export default function EntryVoteControl({
                 onClick={handleConfirmCastVote}
                 className="w-full sm:flex-1 py-3 px-5 rounded-full text-xs sm:text-sm font-bold text-white bg-[#234E3D] hover:bg-[#1A3B2E] transition-all shadow-sm cursor-pointer"
               >
-                Yes, Seal My Vote
+                Yes, Cast My Vote
               </button>
               <button
                 type="button"

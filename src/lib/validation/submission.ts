@@ -56,7 +56,14 @@ export const submissionSchema = z.object({
       if (isNaN(dob.getTime())) return false;
       const now = new Date();
       return dob <= now;
-    }, "Date of birth cannot be in the future."),
+    }, "Date of birth cannot be in the future.")
+    .refine((val) => {
+      const dob = new Date(`${val}T00:00:00Z`);
+      if (isNaN(dob.getTime())) return false;
+      const now = new Date();
+      const twoYearsAgo = new Date(now.getFullYear() - 2, now.getMonth(), now.getDate());
+      return dob >= twoYearsAgo;
+    }, "Baby must be 24 months (2 years) or younger to participate."),
   ageCategory: z.enum(
     ["under-6-months", "under-12-months", "up-to-24-months"],
     {

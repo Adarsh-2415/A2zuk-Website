@@ -164,7 +164,7 @@ export default function EntryVotingPanel({
 
                 {/* Voting policy explanation */}
                 <div className="mt-1 pt-3 border-t border-[#EFECE4] text-[11px] sm:text-xs text-[#5A6D61] leading-relaxed">
-                  <strong className="font-semibold text-[#1B382B]">Official election rule:</strong> Exactly 1 vote per verified Google account for the entire contest. Once cast, your ballot is permanently sealed.
+                  <strong className="font-semibold text-[#1B382B]">Official voting rule:</strong> Exactly 1 vote per contestant per verified Google account. Support your favourite babies freely and fairly!
                 </div>
 
                 {/* In-Hero "Got a baby too?" Bridge Card */}

@@ -54,6 +54,31 @@ export const INDIAN_STATES = [
   "Puducherry",
 ] as const;
 
+/**
+ * Calculates the exact age in months and automatically matches the baby's age category.
+ */
+function determineAgeCategory(dobStr: string): BabyAgeCategory | "" {
+  if (!dobStr) return "";
+  const parts = dobStr.split("-");
+  if (parts.length !== 3) return "";
+  const year = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+  const dob = new Date(year, month, day);
+  if (isNaN(dob.getTime())) return "";
+
+  const now = new Date();
+  let months = (now.getFullYear() - dob.getFullYear()) * 12 + (now.getMonth() - dob.getMonth());
+  if (now.getDate() < dob.getDate()) {
+    months -= 1;
+  }
+  if (months < 0) return "";
+  if (months < 6) return "under-6-months";
+  if (months < 12) return "under-12-months";
+  if (months <= 24) return "up-to-24-months";
+  return "";
+}
+
 export function EntrySubmitForm({
   contestSlug = "baby-photo-contest-1",
 }: EntrySubmitFormProps) {
@@ -155,6 +180,22 @@ export function EntrySubmitForm({
     }
   };
 
+  // DOB change handler: automatically calculates age category (up to 24 months)
+  const handleDobChange = (dateStr: string) => {
+    const autoCat = determineAgeCategory(dateStr);
+    setFormData((prev) => ({
+      ...prev,
+      childDateOfBirth: dateStr,
+      ageCategory: autoCat || prev.ageCategory,
+    }));
+    if (errors.childDateOfBirth) {
+      setErrors((prev) => ({ ...prev, childDateOfBirth: undefined }));
+    }
+    if (autoCat && errors.ageCategory) {
+      setErrors((prev) => ({ ...prev, ageCategory: undefined }));
+    }
+  };
+
   // Client-side validation logic
   const validateForm = (): boolean => {
     const newErrors: SubmissionFormErrors = {};
@@ -211,9 +252,22 @@ export function EntrySubmitForm({
       newErrors.childDisplayName = "Please provide your baby's display name for the contest page.";
     }
 
-    // 6. Baby Date of Birth
+    // 6. Baby Date of Birth (strictly <= 24 months / 2 years)
     if (!formData.childDateOfBirth.trim()) {
       newErrors.childDateOfBirth = "Please select your baby's date of birth from the calendar.";
+    } else {
+      const parts = formData.childDateOfBirth.split("-");
+      if (parts.length === 3) {
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const day = parseInt(parts[2], 10);
+        const dob = new Date(year, month, day);
+        const now = new Date();
+        const twoYearsAgo = new Date(now.getFullYear() - 2, now.getMonth(), now.getDate());
+        if (dob < twoYearsAgo) {
+          newErrors.childDateOfBirth = "Baby must be 24 months (2 years) or younger to participate.";
+        }
+      }
     }
 
     // 7. Baby Age Category
@@ -695,12 +749,12 @@ export function EntrySubmitForm({
 
                 <DatePickerCalendar
                   value={formData.childDateOfBirth}
-                  onChange={(dateStr) => handleTextChange("childDateOfBirth", dateStr)}
+                  onChange={handleDobChange}
                   error={errors.childDateOfBirth}
                 />
 
                 <p className="text-[11px] text-[#5A6D61]">
-                  Used strictly for category verification. Future dates are disabled.
+                  Used strictly for category verification (maximum 24 months / 2 years).
                 </p>
                 {errors.childDateOfBirth && (
                   <p className="text-xs font-medium text-red-600">{errors.childDateOfBirth}</p>
@@ -755,13 +809,18 @@ export function EntrySubmitForm({
 
             {/* SECTION 6: Consent and Confirmation */}
             <div className="space-y-4 pt-2">
-              <div className="flex items-center gap-2 pb-2 border-b border-[#F5F2EA]">
-                <span className="w-6 h-6 rounded-full bg-[#234E3D]/10 text-[#234E3D] flex items-center justify-center text-xs font-bold">
-                  6
+              <div className="flex items-center justify-between pb-2 border-b border-[#F5F2EA]">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#234E3D]/10 text-[#234E3D] flex items-center justify-center text-xs font-bold">
+                    6
+                  </span>
+                  <h3 className="text-sm font-bold text-[#1B382B] uppercase tracking-wide">
+                    Consent &amp; Confirmation
+                  </h3>
+                </div>
+                <span className="text-[11px] font-bold text-[#D97706] bg-[#FEF3C7] border border-[#FDE68A] px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                  Mandatory
                 </span>
-                <h3 className="text-sm font-bold text-[#1B382B] uppercase tracking-wide">
-                  Consent & Confirmation
-                </h3>
               </div>
 
               <div className="space-y-3 pt-1">
@@ -769,6 +828,7 @@ export function EntrySubmitForm({
                 <label className="flex items-start gap-3 cursor-pointer group select-none">
                   <input
                     type="checkbox"
+                    required
                     checked={formData.consentGuardian}
                     onChange={(e) => handleCheckboxChange("consentGuardian", e.target.checked)}
                     className="mt-0.5 w-4 h-4 rounded text-[#234E3D] focus:ring-[#234E3D] border-[#EFECE4]"
@@ -785,6 +845,7 @@ export function EntrySubmitForm({
                 <label className="flex items-start gap-3 cursor-pointer group select-none">
                   <input
                     type="checkbox"
+                    required
                     checked={formData.consentSharing}
                     onChange={(e) => handleCheckboxChange("consentSharing", e.target.checked)}
                     className="mt-0.5 w-4 h-4 rounded text-[#234E3D] focus:ring-[#234E3D] border-[#EFECE4]"
@@ -801,6 +862,7 @@ export function EntrySubmitForm({
                 <label className="flex items-start gap-3 cursor-pointer group select-none">
                   <input
                     type="checkbox"
+                    required
                     checked={formData.consentRules}
                     onChange={(e) => handleCheckboxChange("consentRules", e.target.checked)}
                     className="mt-0.5 w-4 h-4 rounded text-[#234E3D] focus:ring-[#234E3D] border-[#EFECE4]"
@@ -825,16 +887,38 @@ export function EntrySubmitForm({
               </div>
             )}
 
+            {/* Consent Requirement Notice & Submit Button */}
+            {(!formData.consentGuardian || !formData.consentSharing || !formData.consentRules) && (
+              <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-[#FFFBEB] border border-[#FDE68A] text-xs font-semibold text-[#92400E]">
+                <span className="text-base" aria-hidden="true">🔒</span>
+                <span>Please confirm all 3 mandatory checkboxes in Section 6 to enable entry submission.</span>
+              </div>
+            )}
+
             {/* Primary Submit Action Button */}
-            <div className="pt-4">
+            <div className="pt-2">
               <button
                 type="submit"
-                className="w-full py-4 px-6 rounded-full text-sm sm:text-base font-semibold text-white bg-[#234E3D] hover:bg-[#1A3B2E] active:scale-[0.99] transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2 group"
+                disabled={!formData.consentGuardian || !formData.consentSharing || !formData.consentRules}
+                className={`w-full py-4 px-6 rounded-full text-sm sm:text-base font-semibold text-white transition-all duration-200 shadow-sm flex items-center justify-center gap-2 ${
+                  !formData.consentGuardian || !formData.consentSharing || !formData.consentRules
+                    ? "bg-[#8CA395] cursor-not-allowed opacity-80"
+                    : "bg-[#234E3D] hover:bg-[#1A3B2E] active:scale-[0.99] hover:shadow-md cursor-pointer group"
+                }`}
               >
-                <span>Submit your entry</span>
-                <span className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true">
-                  ↗
-                </span>
+                {!formData.consentGuardian || !formData.consentSharing || !formData.consentRules ? (
+                  <>
+                    <span aria-hidden="true">🔒</span>
+                    <span>Confirm All 3 Consents to Submit</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Submit your entry</span>
+                    <span className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true">
+                      ↗
+                    </span>
+                  </>
+                )}
               </button>
             </div>
 

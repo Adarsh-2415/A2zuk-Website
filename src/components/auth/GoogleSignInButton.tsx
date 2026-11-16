@@ -28,12 +28,16 @@ export function GoogleSignInButton({
 
       const supabase = createClient();
       const origin = window.location.origin;
-      const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`;
+      // Clean callback URL matching Supabase Redirect URL configuration exactly
+      const callbackUrl = `${origin}/auth/callback`;
 
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: callbackUrl,
+          queryParams: {
+            prompt: "select_account",
+          },
         },
       });
 

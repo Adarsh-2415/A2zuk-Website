@@ -76,7 +76,7 @@ export function VoterAuthModal({
 
         <div className="pt-2 border-t border-[#EFECE4]">
           <p className="text-[11px] text-[#5A6D61] leading-relaxed">
-            🔒 <strong>Election Voting Rule:</strong> Each verified Google account receives <strong>1 official vote for the entire contest</strong>. Once submitted, your ballot is sealed and permanent.
+            🔒 <strong>Official Voting Rule:</strong> Each verified Google account receives <strong>1 official vote per contestant</strong>. Once cast, your vote for that contestant is sealed.
           </p>
         </div>
       </div>

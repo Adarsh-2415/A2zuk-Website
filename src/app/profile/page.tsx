@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 };
 
 async function ProfilePageContent() {
+  await connection();
   const profileData = await getUserProfileData();
 
   if (!profileData) {

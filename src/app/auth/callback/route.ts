@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
@@ -6,9 +7,8 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
 
   // Retrieve destination from query param or fallback to cookie set prior to OAuth
-  const cookieHeader = request.headers.get("cookie") || "";
-  const cookieMatch = cookieHeader.match(/auth_redirect_next=([^;]+)/);
-  const cookieNext = cookieMatch ? decodeURIComponent(cookieMatch[1]) : null;
+  const cookieStore = await cookies();
+  const cookieNext = cookieStore.get("auth_redirect_next")?.value;
   const rawNext = searchParams.get("next") || cookieNext || "/";
 
   // Security: only allow relative paths to prevent open-redirect vulnerabilities
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      const response = NextResponse.redirect(`${origin}${safeRedirectPath}`);
+      const response = NextResponse.redirect(new URL(safeRedirectPath, origin));
       // Clear one-time redirect cookie
       response.cookies.delete("auth_redirect_next");
       return response;
@@ -27,7 +27,9 @@ export async function GET(request: Request) {
   }
 
   // Return user to target path or home on failure
-  const errorResponse = NextResponse.redirect(`${origin}${safeRedirectPath}?auth_error=true`);
+  const errorResponse = NextResponse.redirect(
+    new URL(`${safeRedirectPath}?auth_error=true`, origin),
+  );
   errorResponse.cookies.delete("auth_redirect_next");
   return errorResponse;
 }

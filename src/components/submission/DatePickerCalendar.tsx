@@ -57,10 +57,16 @@ export function DatePickerCalendar({
   const [viewMonth, setViewMonth] = useState(() => (selectedDate ? selectedDate.getMonth() : 9));
 
 
-  // Year choices: up to 3 years ago (ideal for babies/toddlers up to 2-3 years)
+  // Minimum allowable DOB (strictly 24 months / 2 years ago)
+  const minDate = useMemo(() => {
+    if (!today) return null;
+    return new Date(today.getFullYear() - 2, today.getMonth(), today.getDate());
+  }, [today]);
+
+  // Year choices: strictly up to 2 years ago (matches 24-month contest limit)
   const yearOptions = useMemo(() => {
     const currentYear = today ? today.getFullYear() : 2026;
-    return [currentYear, currentYear - 1, currentYear - 2, currentYear - 3];
+    return [currentYear, currentYear - 1, currentYear - 2];
   }, [today]);
 
   // Sync view when value changes externally (React 19 pattern without effect)
@@ -106,6 +112,8 @@ export function DatePickerCalendar({
       day: number;
       isCurrentMonth: boolean;
       isFuture: boolean;
+      isTooOld: boolean;
+      isDisabled: boolean;
       isSelected: boolean;
       isToday: boolean;
       dateString: string;
@@ -118,6 +126,7 @@ export function DatePickerCalendar({
       const prevYear = viewMonth === 0 ? viewYear - 1 : viewYear;
       const dateObj = new Date(prevYear, prevMonth, dayNum);
       const isFuture = today ? dateObj.getTime() > today.getTime() : false;
+      const isTooOld = minDate ? dateObj.getTime() < minDate.getTime() : false;
       const monthStr = String(prevMonth + 1).padStart(2, "0");
       const dayStr = String(dayNum).padStart(2, "0");
 
@@ -125,6 +134,8 @@ export function DatePickerCalendar({
         day: dayNum,
         isCurrentMonth: false,
         isFuture,
+        isTooOld,
+        isDisabled: isFuture || isTooOld,
         isSelected: false,
         isToday: false,
         dateString: `${prevYear}-${monthStr}-${dayStr}`,
@@ -135,11 +146,12 @@ export function DatePickerCalendar({
     for (let day = 1; day <= daysInCurrentMonth; day++) {
       const dateObj = new Date(viewYear, viewMonth, day);
       const isFuture = today ? dateObj.getTime() > today.getTime() : false;
+      const isTooOld = minDate ? dateObj.getTime() < minDate.getTime() : false;
       const isToday = today ? dateObj.getTime() === today.getTime() : false;
       const isSelected = selectedDate
         ? selectedDate.getFullYear() === viewYear &&
-          selectedDate.getMonth() === viewMonth &&
-          selectedDate.getDate() === day
+        selectedDate.getMonth() === viewMonth &&
+        selectedDate.getDate() === day
         : false;
 
       const monthStr = String(viewMonth + 1).padStart(2, "0");
@@ -149,6 +161,8 @@ export function DatePickerCalendar({
         day,
         isCurrentMonth: true,
         isFuture,
+        isTooOld,
+        isDisabled: isFuture || isTooOld,
         isSelected,
         isToday,
         dateString: `${viewYear}-${monthStr}-${dayStr}`,
@@ -162,6 +176,7 @@ export function DatePickerCalendar({
       const nextYear = viewMonth === 11 ? viewYear + 1 : viewYear;
       const dateObj = new Date(nextYear, nextMonth, day);
       const isFuture = today ? dateObj.getTime() > today.getTime() : false;
+      const isTooOld = minDate ? dateObj.getTime() < minDate.getTime() : false;
       const monthStr = String(nextMonth + 1).padStart(2, "0");
       const dayStr = String(day).padStart(2, "0");
 
@@ -169,6 +184,8 @@ export function DatePickerCalendar({
         day,
         isCurrentMonth: false,
         isFuture,
+        isTooOld,
+        isDisabled: isFuture || isTooOld,
         isSelected: false,
         isToday: false,
         dateString: `${nextYear}-${monthStr}-${dayStr}`,
@@ -176,10 +193,19 @@ export function DatePickerCalendar({
     }
 
     return days;
-  }, [viewYear, viewMonth, selectedDate, today]);
+  }, [viewYear, viewMonth, selectedDate, today, minDate]);
+
+  // Prev navigation guard: prevent navigating prior to minDate (24 months ago)
+  const canNavigatePrev = useMemo(() => {
+    if (!minDate) return true;
+    if (viewYear < minDate.getFullYear()) return false;
+    if (viewYear === minDate.getFullYear() && viewMonth <= minDate.getMonth()) return false;
+    return true;
+  }, [viewYear, viewMonth, minDate]);
 
   // Navigate months
   const handlePrevMonth = () => {
+    if (!canNavigatePrev) return;
     if (viewMonth === 0) {
       setViewMonth(11);
       setViewYear((prev) => prev - 1);
@@ -233,9 +259,8 @@ export function DatePickerCalendar({
       {/* Date Trigger Field */}
       <div
         onClick={handleToggleCalendar}
-        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm bg-[#FAF8F5] border cursor-pointer hover:bg-white transition-all ${
-          isOpen ? "ring-2 ring-[#234E3D] border-transparent bg-white shadow-xs" : error ? "border-red-400 bg-red-50/20" : "border-[#EFECE4]"
-        }`}
+        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm bg-[#FAF8F5] border cursor-pointer hover:bg-white transition-all ${isOpen ? "ring-2 ring-[#234E3D] border-transparent bg-white shadow-xs" : error ? "border-red-400 bg-red-50/20" : "border-[#EFECE4]"
+          }`}
         role="button"
         tabIndex={0}
         aria-haspopup="dialog"
@@ -276,8 +301,10 @@ export function DatePickerCalendar({
             <button
               type="button"
               onClick={handlePrevMonth}
+              disabled={!canNavigatePrev}
               aria-label="Previous month"
-              className="p-1.5 rounded-lg text-[#1B382B] hover:bg-black/5 active:scale-95 transition-all"
+              className={`p-1.5 rounded-lg text-[#1B382B] transition-all ${canNavigatePrev ? "hover:bg-black/5 active:scale-95" : "opacity-25 cursor-not-allowed"
+                }`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
@@ -293,12 +320,15 @@ export function DatePickerCalendar({
                 aria-label="Select month"
               >
                 {MONTHS.map((m, idx) => {
-                  // Disable future months in current year
+                  // Disable future months in current year or past months beyond 24 months
                   const isFutureMonth = today
                     ? viewYear === today.getFullYear() && idx > today.getMonth()
                     : false;
+                  const isPastMonth = minDate
+                    ? viewYear === minDate.getFullYear() && idx < minDate.getMonth()
+                    : false;
                   return (
-                    <option key={m} value={idx} disabled={isFutureMonth}>
+                    <option key={m} value={idx} disabled={isFutureMonth || isPastMonth}>
                       {m}
                     </option>
                   );
@@ -325,9 +355,8 @@ export function DatePickerCalendar({
               onClick={handleNextMonth}
               disabled={!canNavigateNext}
               aria-label="Next month"
-              className={`p-1.5 rounded-lg text-[#1B382B] transition-all ${
-                canNavigateNext ? "hover:bg-black/5 active:scale-95" : "opacity-25 cursor-not-allowed"
-              }`}
+              className={`p-1.5 rounded-lg text-[#1B382B] transition-all ${canNavigateNext ? "hover:bg-black/5 active:scale-95" : "opacity-25 cursor-not-allowed"
+                }`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
@@ -347,12 +376,13 @@ export function DatePickerCalendar({
           {/* Days Grid */}
           <div className="grid grid-cols-7 gap-1">
             {calendarDays.map((cell, idx) => {
-              if (cell.isFuture) {
+              if (cell.isDisabled) {
                 return (
                   <div
                     key={idx}
                     className="h-8 flex items-center justify-center text-xs text-black/20 cursor-not-allowed select-none"
                     aria-disabled="true"
+                    title={cell.isFuture ? "Future dates not allowed" : "Baby must be 24 months (2 years) or younger"}
                   >
                     {cell.day}
                   </div>
@@ -383,13 +413,12 @@ export function DatePickerCalendar({
                     onChange(cell.dateString);
                     setIsOpen(false);
                   }}
-                  className={`h-8 w-full flex items-center justify-center text-xs font-semibold rounded-lg transition-all duration-150 ${
-                    cell.isSelected
+                  className={`h-8 w-full flex items-center justify-center text-xs font-semibold rounded-lg transition-all duration-150 ${cell.isSelected
                       ? "bg-[#234E3D] text-white shadow-xs font-bold scale-105"
                       : cell.isToday
-                      ? "border border-[#234E3D] text-[#234E3D] font-bold hover:bg-[#234E3D]/10"
-                      : "text-[#1B382B] hover:bg-[#D4E865]/40 hover:text-[#1B382B]"
-                  }`}
+                        ? "border border-[#234E3D] text-[#234E3D] font-bold hover:bg-[#234E3D]/10"
+                        : "text-[#1B382B] hover:bg-[#D4E865]/40 hover:text-[#1B382B]"
+                    }`}
                 >
                   {cell.day}
                 </button>
@@ -399,7 +428,7 @@ export function DatePickerCalendar({
 
           {/* Popover Footer with Clear & Close */}
           <div className="mt-3 pt-2.5 border-t border-[#F5F2EA] flex items-center justify-between text-xs">
-            <span className="text-[11px] text-[#5A6D61]">Future dates disabled</span>
+            <span className="text-[11px] text-[#5A6D61]">Only up to 24 months (2 yrs) allowed</span>
             <div className="flex items-center gap-2">
               {value && (
                 <button

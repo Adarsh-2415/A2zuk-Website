@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getContestBySlug } from "@/lib/queries/contests";
@@ -84,6 +85,7 @@ async function ContestEntryContent({
 }: {
   params: Promise<{ slug: string; entrySlug: string }>;
 }) {
+  await connection();
   const { slug, entrySlug } = await params;
   const contest = await getContestBySlug(slug);
 
@@ -212,10 +214,6 @@ async function ContestEntryContent({
                 <span className="flex items-center gap-1.5 font-medium">
                   <span className="text-[#234E3D]">🏆</span>
                   <span>₹27,500 Prize Pool (13 Winners)</span>
-                </span>
-                <span className="flex items-center gap-1.5 font-medium">
-                  <span className="text-[#234E3D]">🎁</span>
-                  <span>Digital Keepsake Certificate</span>
                 </span>
                 <span className="flex items-center gap-1.5 font-medium">
                   <span className="text-[#234E3D]">✨</span>

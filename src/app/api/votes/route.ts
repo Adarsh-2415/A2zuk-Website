@@ -117,8 +117,10 @@ export async function POST(request: Request) {
     const msg = rpcError?.message ?? "Unable to record vote.";
     let status = 400;
     if (
+      msg.includes("already voted for this contestant") ||
       msg.includes("already cast your official vote") ||
       msg.includes("Already voted") ||
+      msg.includes("idx_votes_unique_user_entry") ||
       msg.includes("idx_votes_unique_user_contest")
     ) {
       status = 409;
