@@ -216,49 +216,53 @@ export async function POST(request: Request) {
     );
   }
 
-  // 1. Dispatch confirmation email to parent asynchronously
-  sendParentSubmissionReceivedEmail({
-    babyName: parsed.data.childDisplayName,
-    guardianName: parsed.data.guardianName,
-    guardianEmail: parsed.data.email,
-    ageCategory: parsed.data.ageCategory,
-    city: `${parsed.data.city}, ${parsed.data.state}`,
-    contestSlug: parsed.data.contestSlug,
-    publicCode: rpcData[0].public_code,
-  }).catch((parentEmailErr) => {
-    console.error(
-      "[POST /api/submissions] Background parent confirmation email failed:",
-      parentEmailErr,
-    );
-  });
-
-  // 2. Generate 7-day signed photo URL for email preview & dispatch admin moderation email asynchronously
-  supabase.storage
-    .from(PENDING_PHOTO_BUCKET)
-    .createSignedUrl(pendingPhotoPath, 7 * 24 * 3600)
-    .then(({ data: signedPhoto }) => {
-      sendModerationAlertEmail({
-        entryId: rpcData[0].entry_id,
+  // Dispatch both parent confirmation email and admin moderation email
+  // We await Promise.allSettled so serverless functions (e.g. on Vercel) do not freeze
+  // the container before outbound SMTP packets finish sending.
+  try {
+    await Promise.allSettled([
+      sendParentSubmissionReceivedEmail({
         babyName: parsed.data.childDisplayName,
-        ageCategory: parsed.data.ageCategory,
-        city: `${parsed.data.city}, ${parsed.data.state}`,
         guardianName: parsed.data.guardianName,
         guardianEmail: parsed.data.email,
-        photoSignedUrl: signedPhoto?.signedUrl || "",
+        ageCategory: parsed.data.ageCategory,
+        city: `${parsed.data.city}, ${parsed.data.state}`,
         contestSlug: parsed.data.contestSlug,
-      }).catch((emailErr) => {
+        publicCode: rpcData[0].public_code,
+      }).catch((parentEmailErr) => {
         console.error(
-          "[POST /api/submissions] Background moderation email failed:",
-          emailErr,
+          "[POST /api/submissions] Parent confirmation email failed:",
+          parentEmailErr,
         );
-      });
-    })
-    .catch((err) => {
-      console.error(
-        "[POST /api/submissions] Failed to generate signed photo URL for email:",
-        err,
-      );
-    });
+      }),
+
+      (async () => {
+        try {
+          const { data: signedPhoto } = await supabase.storage
+            .from(PENDING_PHOTO_BUCKET)
+            .createSignedUrl(pendingPhotoPath, 7 * 24 * 3600);
+
+          await sendModerationAlertEmail({
+            entryId: rpcData[0].entry_id,
+            babyName: parsed.data.childDisplayName,
+            ageCategory: parsed.data.ageCategory,
+            city: `${parsed.data.city}, ${parsed.data.state}`,
+            guardianName: parsed.data.guardianName,
+            guardianEmail: parsed.data.email,
+            photoSignedUrl: signedPhoto?.signedUrl || "",
+            contestSlug: parsed.data.contestSlug,
+          });
+        } catch (emailErr) {
+          console.error(
+            "[POST /api/submissions] Admin moderation alert email failed:",
+            emailErr,
+          );
+        }
+      })(),
+    ]);
+  } catch (settledErr) {
+    console.error("[POST /api/submissions] Background email dispatch error:", settledErr);
+  }
 
   return NextResponse.json(
     {

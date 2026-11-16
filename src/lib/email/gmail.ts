@@ -14,7 +14,18 @@ interface ModerationEmailParams {
 }
 
 function getSiteUrl(): string {
-  const url = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  // If explicitly set with a custom domain (e.g. https://a2zuk.in)
+  if (process.env.NEXT_PUBLIC_SITE_URL && !process.env.NEXT_PUBLIC_SITE_URL.includes("localhost")) {
+    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, "");
+  }
+  // Vercel production system variables
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`.replace(/\/+$/, "");
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`.replace(/\/+$/, "");
+  }
+  const url = process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === "production" ? "https://a2zuk.in" : "http://localhost:3000");
   return url.replace(/\/+$/, "");
 }
 
@@ -126,11 +137,10 @@ export async function sendModerationAlertEmail(params: ModerationEmailParams): P
           <span class="label">Age Category:</span>
           <span class="value">${categoryLabel}</span>
         </div>
-        ${
-          params.city
-            ? `<div class="row"><span class="label">City:</span><span class="value">${params.city}</span></div>`
-            : ""
-        }
+        ${params.city
+      ? `<div class="row"><span class="label">City:</span><span class="value">${params.city}</span></div>`
+      : ""
+    }
         <div class="row">
           <span class="label">Parent / Guardian:</span>
           <span class="value">${params.guardianName}</span>
@@ -265,11 +275,10 @@ export async function sendParentSubmissionReceivedEmail(
           <span class="label">Age Category:</span>
           <span class="value">${categoryLabel}</span>
         </div>
-        ${
-          params.city
-            ? `<div class="row"><span class="label">City:</span><span class="value">${params.city}</span></div>`
-            : ""
-        }
+        ${params.city
+      ? `<div class="row"><span class="label">City:</span><span class="value">${params.city}</span></div>`
+      : ""
+    }
         <div class="row">
           <span class="label">Current Status:</span>
           <span class="status-badge">⏳ Under Verification</span>

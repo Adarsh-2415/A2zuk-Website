@@ -8,10 +8,14 @@ export interface ModerationTokenPayload {
 }
 
 function getModerationSecret(): string {
-  const secret = process.env.MODERATION_SECRET;
+  const secret =
+    process.env.MODERATION_SECRET ||
+    process.env.VOTE_TOKEN_SECRET ||
+    process.env.SUPABASE_SERVICE_ROLE_KEY;
+
   if (!secret || secret.trim().length < 16) {
     throw new Error(
-      "MODERATION_SECRET is not configured or is too short. Please set a secure key in .env.local",
+      "MODERATION_SECRET is not configured or is too short. Please set MODERATION_SECRET in your environment.",
     );
   }
   return secret.trim();

@@ -155,20 +155,22 @@ export async function POST(request: Request) {
     revalidatePath(`/contests/${contestSlug}`);
     revalidatePath(`/contests/${contestSlug}/entries/${entry.public_code}`);
 
-    // Dispatch approval email to parent asynchronously
+    // Dispatch approval email to parent
     if (privateDetails?.guardian_email) {
-      sendParentEntryApprovedEmail({
-        babyName: entry.baby_name,
-        guardianName: privateDetails.guardian_name || "Parent",
-        guardianEmail: privateDetails.guardian_email,
-        contestSlug,
-        publicCode: entry.public_code,
-      }).catch((emailErr) => {
+      try {
+        await sendParentEntryApprovedEmail({
+          babyName: entry.baby_name,
+          guardianName: privateDetails.guardian_name || "Parent",
+          guardianEmail: privateDetails.guardian_email,
+          contestSlug,
+          publicCode: entry.public_code,
+        });
+      } catch (emailErr) {
         console.error(
           "[Moderate API] Failed to send parent approval email:",
           emailErr,
         );
-      });
+      }
     }
 
     return NextResponse.json({
@@ -208,20 +210,22 @@ export async function POST(request: Request) {
     revalidatePath(`/contests/${contestSlug}`);
     revalidatePath(`/contests/${contestSlug}/entries/${entry.public_code}`);
 
-    // Dispatch rejection/revision email to parent asynchronously
+    // Dispatch rejection/revision email to parent
     if (privateDetails?.guardian_email) {
-      sendParentEntryRejectedEmail({
-        babyName: entry.baby_name,
-        guardianName: privateDetails.guardian_name || "Parent",
-        guardianEmail: privateDetails.guardian_email,
-        contestSlug,
-        rejectionReason: "Quality or safety review guidelines",
-      }).catch((emailErr) => {
+      try {
+        await sendParentEntryRejectedEmail({
+          babyName: entry.baby_name,
+          guardianName: privateDetails.guardian_name || "Parent",
+          guardianEmail: privateDetails.guardian_email,
+          contestSlug,
+          rejectionReason: "Quality or safety review guidelines",
+        });
+      } catch (emailErr) {
         console.error(
           "[Moderate API] Failed to send parent rejection email:",
           emailErr,
         );
-      });
+      }
     }
 
     return NextResponse.json({
