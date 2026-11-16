@@ -46,10 +46,12 @@ export default function TermsPage() {
         <>
           <p>
             Contests hosted on A2ZUK are open to eligible participants as specified
-            in the rules for each contest. For contests involving infants, toddlers,
-            or minors:
+            in the rules for each contest. For baby and toddler photo contests:
           </p>
           <ul className="list-disc pl-5 space-y-1.5 mt-2">
+            <li>
+              Eligible children must be between newborn and 24 months (2 years old) at the date of entry.
+            </li>
             <li>
               Only a biological parent or legally appointed court guardian may
               submit an entry on behalf of a minor child.
@@ -61,8 +63,6 @@ export default function TermsPage() {
           </ul>
         </>
       ),
-      pendingNote:
-        "Universal age thresholds, state-specific geographic restrictions within India, and exact guardian verification proof standards require confirmation prior to launch.",
     },
     {
       id: "section-3",
@@ -70,7 +70,7 @@ export default function TermsPage() {
       title: "Contest-specific rules",
       content: (
         <p>
-          Each contest hosted on A2ZUK may feature its own specific calendar dates,
+          Each contest hosted on A2ZUK features its own specific calendar dates,
           eligibility criteria, submission deadlines, categories, and winner-selection
           methodology. In the event of an irreconcilable conflict between these
           general terms and contest-specific rules, the specific contest rules
@@ -99,27 +99,23 @@ export default function TermsPage() {
           </p>
           <p className="mt-2">
             <strong>Removal Requests:</strong> Guardians may request the withdrawal
-            and unpublishing of their entry at any point during or after the contest.
+            and unpublishing of their entry at any point during or after the contest by emailing support@a2zuk.in.
           </p>
         </>
       ),
-      pendingNote:
-        "The precise contractual license scope, promotional usage allowances, and withdrawal execution timelines must be finalized with legal counsel.",
     },
     {
       id: "section-5",
       number: "5",
-      title: "Automated checks and publication",
+      title: "Safety, quality review and publication",
       content: (
         <p>
-          Submissions undergo automated pre-publication screening to evaluate image
-          formatting, file integrity, and basic eligibility. Submissions that pass
-          required checks are published directly to the public gallery. Submissions
-          that fail automated checks are not published.
+          Submissions undergo safety and quality screening to evaluate image
+          clarity, child-safety standards, and age category eligibility. Submissions that pass
+          required checks are published directly to the public gallery. If a submission
+          fails guidelines, the guardian is notified privately with instructions on how to submit an eligible photo.
         </p>
       ),
-      pendingNote:
-        "Detailed error rejection messaging, resubmission allowances, and manual appeal channels remain subject to operational design decisions.",
     },
     {
       id: "section-6",
@@ -129,26 +125,26 @@ export default function TermsPage() {
         <>
           <p>
             To foster community enthusiasm and genuine participation, public voting
-            is authenticated via verified Google Sign-In to uphold strict one person, one vote integrity.
+            is authenticated via verified Google Sign-In to uphold strict election integrity:
           </p>
           <ul className="list-disc pl-5 space-y-1.5 mt-2">
             <li>
-              Each verified voter receives exactly 1 official vote in the contest. Once cast, the ballot is sealed and permanent.
+              Each verified Google account receives 1 official vote per contestant. You are welcome to vote for multiple different contestants, but cannot vote more than once for the same child.
+            </li>
+            <li>
+              Parents and guardians cannot cast votes for their own child&apos;s entry.
+            </li>
+            <li>
+              Once cast for a contestant, the vote is permanently sealed and cannot be changed or transferred.
             </li>
             <li>
               Voting must reflect genuine individual human choices. Any attempt to
               manipulate vote counts using automated scripts, click farms, botnets,
-              or fraudulent techniques is strictly prohibited.
-            </li>
-            <li>
-              Suspicious activity may trigger secondary verification challenges or
-              disqualification of fraudulent tallies during post-contest auditing.
+              or fraudulent techniques is strictly prohibited and monitored by automated velocity audits.
             </li>
           </ul>
         </>
       ),
-      pendingNote:
-        "Specific anomaly detection and anti-abuse thresholds remain subject to continuous monitoring.",
     },
     {
       id: "section-7",
@@ -184,17 +180,15 @@ export default function TermsPage() {
     {
       id: "section-8",
       number: "8",
-      title: "Winners, prizes and sponsors",
+      title: "Winners, prizes and awards",
       content: (
         <p>
-          Winner selection methodology, prize conditions (if any), and post-contest
+          Winner selection methodology, prize tiers, and post-contest
           audit verification procedures are governed by the specific rules approved
           for each contest. Public vote counts displayed during active voting are
-          provisional and subject to audit before final declarations are made.
+          provisional and subject to automated audit before final declarations are made.
         </p>
       ),
-      pendingNote:
-        "Prize fulfillment workflows, sponsor partnerships, tax compliance obligations, and tie-breaking protocols must be confirmed before launch.",
     },
     {
       id: "section-9",
@@ -212,17 +206,12 @@ export default function TermsPage() {
     {
       id: "section-10",
       number: "10",
-      title: "Liability, disputes and contact",
+      title: "Disputes and official contact",
       content: (
         <p>
-          These terms represent the preliminary operational framework for the
-          platform. Formal statutory provisions governing limitation of liability,
-          dispute resolution mechanisms, applicable governing law, and jurisdiction
-          will be finalized and published following legal review.
+          For any questions regarding these terms, contest rules, or entry status, users may contact the A2ZUK support team directly at support@a2zuk.in.
         </p>
       ),
-      pendingNote:
-        "Governing jurisdiction, dispute escalation procedures, and official corporate service contact addresses must be reviewed by legal counsel.",
     },
   ];
 
@@ -237,6 +226,7 @@ export default function TermsPage() {
             title="Terms & Conditions"
             intro={intro}
             sections={termsSections}
+            lastUpdatedLabel="Effective: November 2026"
           />
         </main>
 

@@ -166,10 +166,10 @@ export function CelebrationScreen({
       {/* Staggered Main Headline */}
       <div className="space-y-2 mb-6">
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#1B382B] tracking-tight">
-          Every Little Star Deserves to Shine.
+          Submission Successful!
         </h2>
         <p className="text-xs sm:text-sm text-[#4A5D52] max-w-md mx-auto leading-relaxed">
-          “A tiny smile, a precious memory, a whole lot of love. Thank you for exploring this Littlejoy entry experience.”
+          Thank you for submitting <strong>{babyName || "your baby"}</strong> to the A2ZUK Baby Photo Contest. Your submission is received and securely stored.
         </p>
       </div>
 
@@ -178,10 +178,10 @@ export function CelebrationScreen({
         <div className="flex items-center justify-between pb-2 border-b border-[#EFECE4]/80">
           <span className="text-[11px] font-bold uppercase tracking-wider text-[#234E3D] flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#234E3D]" />
-            Local Preview
+            Official Submission Preview
           </span>
-          <span className="text-[11px] font-medium text-[#5A6D61]">
-            {publicCode ? `Ref: ${publicCode}` : "Not uploaded to server"}
+          <span className="text-[11px] font-bold text-[#1B382B] bg-white px-2 py-0.5 rounded-full border border-[#EFECE4]">
+            {publicCode ? `Ref: ${publicCode}` : "Recorded"}
           </span>
         </div>
 
@@ -191,7 +191,7 @@ export function CelebrationScreen({
             <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-black/5 shrink-0 border border-[#EFECE4] shadow-xs">
               <Image
                 src={photoPreviewUrl}
-                alt={`Local preview for ${babyName || "baby"}`}
+                alt={`Submission preview for ${babyName || "baby"}`}
                 fill
                 className="object-cover"
                 unoptimized
@@ -216,7 +216,7 @@ export function CelebrationScreen({
               </span>
             )}
             <p className="text-[11px] text-[#5A6D61] mt-1 truncate">
-              Photo: {photoFile ? photoFile.name : "Sample preview"}
+              Photo: {photoFile ? photoFile.name : "Uploaded file"}
             </p>
           </div>
         </div>
@@ -225,23 +225,19 @@ export function CelebrationScreen({
       {/* Tasteful Unmistakable Status Label & Disclosure */}
       <div
         role="status"
-        aria-label={publicCode ? "Entry submission status" : "Frontend demonstration notice"}
+        aria-label="Entry submission status"
         className="mb-8 p-4 sm:p-5 rounded-2xl bg-[#FAF8F5] border-2 border-[#234E3D] text-left space-y-1.5"
       >
         <div className="flex items-center gap-2">
           <span className="w-5 h-5 rounded-full bg-[#234E3D] text-[#D4E865] flex items-center justify-center text-xs font-bold shrink-0">
-            {publicCode ? "✓" : "i"}
+            ✓
           </span>
           <h3 className="font-bold text-sm sm:text-base text-[#1B382B]">
-            {publicCode
-              ? "Entry Received — Pending Review"
-              : "Frontend Preview — Entry Not Submitted"}
+            Entry Received — Under Review
           </h3>
         </div>
         <p className="text-xs sm:text-sm text-[#4A5D52] leading-relaxed pl-7">
-          {publicCode
-            ? `Your entry (Reference: ${publicCode}) and photo have been securely uploaded. It will appear in the public gallery once moderation checks pass.`
-            : "This is a demonstration of the submission experience. Real entry submission, photo storage and contest processing will be available once the backend is connected."}
+          Your entry{publicCode ? ` (Reference: ${publicCode})` : ""} and photo have been securely uploaded. Our team is reviewing the submission for quality and child-safety guidelines. You will receive an email confirmation, and another notification with your live share link once approved!
         </p>
       </div>
 

@@ -24,40 +24,35 @@ export default function PrivacyPolicyPage() {
       content: (
         <p>
           A2ZUK is an online contest platform designed to host community contests
-          and celebratory campaigns. The legal entity, business registration details,
-          and registered operating address responsible for the platform are
-          currently pending formal corporate finalization.
+          and celebratory campaigns for families across India. For any inquiries, feedback, or privacy matters, our team can be reached directly at support@a2zuk.in.
         </p>
       ),
-      pendingNote:
-        "The legal entity identity, registration jurisdiction, and official corporate contact details must be formally confirmed before final publication.",
     },
     {
       id: "section-2",
       number: "2",
-      title: "Information we may collect",
+      title: "Information we collect",
       content: (
         <>
           <p>
-            Depending on how you interact with the A2ZUK platform, we may collect
+            Depending on how you interact with the A2ZUK platform, we collect
             the following categories of information:
           </p>
           <ul className="list-disc pl-5 space-y-1.5 mt-2">
             <li>
               <strong>Contest submission forms:</strong> Information provided by
               parents or legal guardians during entry submission (such as child
-              display name, guardian full name, relationship to the child, and
-              guardian contact phone number and email address).
+              display name, date of birth, guardian full name, relationship to the child, and
+              guardian contact phone number, address, and email address).
             </li>
             <li>
               <strong>Submitted photos and entry details:</strong> Photographs
-              uploaded for contest participation, caption text, and associated
-              entry timestamps.
+              uploaded for contest participation and associated timestamps.
             </li>
             <li>
-              <strong>Voting and integrity information:</strong> Network and device
-              identifiers (such as IP addresses, browser headers, and submission
-              timestamps) necessary to enforce the one-vote-per-contest policy and
+              <strong>Voting and integrity information:</strong> Cryptographic hashes
+              and network identifiers (such as hashed IP addresses, browser headers, and submission
+              timestamps) necessary to enforce our 1-vote-per-contestant policy and
               protect against automated manipulation.
             </li>
             <li>
@@ -111,18 +106,18 @@ export default function PrivacyPolicyPage() {
       content: (
         <>
           <p>
-            When an entry passes automated safety checks and is published, certain
-            details become visible to all public visitors on the platform:
+            When an entry passes our safety and quality review and is published, only the
+            following details become visible to visitors on the platform:
           </p>
           <ul className="list-disc pl-5 space-y-1.5 mt-2">
             <li>The approved participant photograph.</li>
             <li>The child&apos;s display name or nickname.</li>
-            <li>Public vote counts accrued by the entry.</li>
+            <li>The child&apos;s age category (e.g., Under 12 Months) and general city/state.</li>
+            <li>Public verified vote counts accrued by the entry.</li>
           </ul>
           <p className="mt-2">
             <strong>Guardian Privacy Protection:</strong> Private guardian contact
-            credentials (including telephone numbers, email addresses, and full legal
-            names) are kept strictly confidential and are never exposed on public
+            credentials (including telephone numbers, email addresses, street addresses, and exact dates of birth) are kept strictly confidential and are never exposed on public
             contestant profiles or public API endpoints.
           </p>
         </>
@@ -150,14 +145,11 @@ export default function PrivacyPolicyPage() {
             </li>
             <li>
               Parents or guardians retain the right to request the withdrawal or
-              removal of their child&apos;s entry at any time through our reporting
-              and support channels.
+              removal of their child&apos;s entry at any time by contacting support@a2zuk.in.
             </li>
           </ul>
         </>
       ),
-      pendingNote:
-        "The precise legal consent wording, verification mechanisms, and statutory child privacy compliance standards remain subject to formal legal review before launch.",
     },
     {
       id: "section-6",
@@ -167,12 +159,9 @@ export default function PrivacyPolicyPage() {
         <p>
           A2ZUK uses essential functional cookies and session storage strictly
           necessary to operate navigation, maintain security integrity, and ensure
-          authentic voting participation. We do not currently deploy third-party advertising
-          trackers or marketing analytics scripts.
+          authentic voting participation via Google Sign-In. We do not sell user data or deploy third-party advertising tracking networks.
         </p>
       ),
-      pendingNote:
-        "Third-party hosting, storage providers, and CDN analytics configurations must be fully audited and listed once infrastructure is connected.",
     },
     {
       id: "section-7",
@@ -184,18 +173,16 @@ export default function PrivacyPolicyPage() {
             We do not sell, rent, or trade participant or guardian personal
             information to third parties. Information is disclosed only when required
             by law or when essential to infrastructure operations (such as secure cloud
-            hosting).
+            hosting on Supabase).
           </p>
           <p className="mt-2">
             <strong>Retention:</strong> Entry data and photographs are retained for
             the duration of the applicable contest lifecycle and verified audit
             window. When an authorized removal request is approved, the entry is
-            de-indexed and unpublished.
+            de-indexed, unpublished, and permanently removed from public view.
           </p>
         </>
       ),
-      pendingNote:
-        "Definitive post-contest photo storage timelines, archival limits, and deletion schedules must be formalized before public release.",
     },
     {
       id: "section-8",
@@ -204,14 +191,11 @@ export default function PrivacyPolicyPage() {
       content: (
         <p>
           Participants and guardians may request access to, correction of, or
-          permanent deletion of their submitted records. If you believe an entry
+          permanent deletion of their submitted records at any time. If you believe an entry
           contains unauthorized imagery of your child or infringes upon your
-          privacy rights, you may submit an entry removal request via the reporting
-          link available on every contestant profile.
+          privacy rights, you may submit an entry removal request directly to support@a2zuk.in.
         </p>
       ),
-      pendingNote:
-        "Formal SLA turnaround times for privacy and deletion requests must be specified following support team operational setup.",
     },
     {
       id: "section-9",
@@ -222,11 +206,9 @@ export default function PrivacyPolicyPage() {
           We may update this Privacy Policy from time to time to reflect evolving
           contest operations, technical improvements, or regulatory requirements.
           Material updates will be posted directly to this page with an updated
-          revision date.
+          revision date. For any questions, please contact support@a2zuk.in.
         </p>
       ),
-      pendingNote:
-        "Official privacy officer contact email, escalation address, and formal effective date will be published following corporate finalization.",
     },
   ];
 
@@ -241,6 +223,7 @@ export default function PrivacyPolicyPage() {
             title="Privacy Policy"
             intro={intro}
             sections={privacySections}
+            lastUpdatedLabel="Effective: November 2026"
           />
         </main>
 

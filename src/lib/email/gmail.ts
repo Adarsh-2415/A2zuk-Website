@@ -1,6 +1,7 @@
 import "server-only";
 import nodemailer from "nodemailer";
 import { createModerationToken } from "@/lib/security/moderation-token";
+import { ADMIN_NOTIFICATION_EMAILS } from "@/config/admins";
 
 interface ModerationEmailParams {
   entryId: string;
@@ -65,16 +66,29 @@ function createGmailTransporter() {
   });
 }
 
+function getAdminEmails(): string[] {
+  const codeList = ADMIN_NOTIFICATION_EMAILS || [];
+  const envRaw = process.env.ADMIN_MODERATION_EMAIL || process.env.GMAIL_USER || "";
+  const envList = envRaw
+    .split(",")
+    .map((e) => e.trim())
+    .filter((e) => Boolean(e) && e.includes("@"));
+
+  // Merge both and deduplicate
+  const merged = Array.from(new Set([...codeList, ...envList]));
+  return merged.filter((e) => Boolean(e) && e.includes("@"));
+}
+
 /**
  * Sends a 1-click moderation email to the admin with photo and Approve/Reject action buttons.
  */
 export async function sendModerationAlertEmail(params: ModerationEmailParams): Promise<boolean> {
   const transporter = createGmailTransporter();
-  const adminEmail = process.env.ADMIN_MODERATION_EMAIL?.trim() || process.env.GMAIL_USER?.trim();
+  const adminEmails = getAdminEmails();
 
-  if (!transporter || !adminEmail) {
+  if (!transporter || adminEmails.length === 0) {
     console.warn(
-      "[Gmail SMTP] Credentials not configured in .env.local (GMAIL_USER / GMAIL_APP_PASSWORD). Skipping email alert.",
+      "[Gmail SMTP] Credentials not configured (GMAIL_USER / GMAIL_APP_PASSWORD / ADMIN_MODERATION_EMAIL). Skipping email alert.",
     );
     return false;
   }
@@ -181,11 +195,11 @@ export async function sendModerationAlertEmail(params: ModerationEmailParams): P
   try {
     await transporter.sendMail({
       from: `"A2ZUK Contest" <${process.env.GMAIL_USER}>`,
-      to: adminEmail,
+      to: adminEmails,
       subject: `🍼 [Action Needed] New Entry: ${params.babyName} (${categoryLabel})`,
       html: htmlContent,
     });
-    console.log(`[Gmail SMTP] Moderation email dispatched successfully for entry ${params.entryId}`);
+    console.log(`[Gmail SMTP] Moderation email dispatched successfully to [${adminEmails.join(", ")}] for entry ${params.entryId}`);
     return true;
   } catch (err) {
     console.error("[Gmail SMTP] Failed to send email alert:", err);

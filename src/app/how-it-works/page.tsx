@@ -17,30 +17,30 @@ export default function HowItWorksPage() {
   const participationSteps = [
     {
       number: "01",
-      title: "Explore contests",
+      title: "Explore the contest",
       description:
-        "Browse available contests and check their deadlines, eligibility and rules.",
+        "Review active contests, key dates, eligibility (up to 24 months), and category prize structures.",
       accent: "coral",
     },
     {
       number: "02",
       title: "Submit your entry",
       description:
-        "Open a contest, complete the submission form and upload the required photo or content.",
+        "Fill out simple details, enter your baby's Date of Birth to auto-match the age category, and upload your favourite clear photo.",
       accent: "lime",
     },
     {
       number: "03",
-      title: "Complete the checks",
+      title: "Fast safety & quality review",
       description:
-        "Your submission goes through the platform's automated checks before publication.",
+        "Our team reviews the submission promptly to ensure photo clarity and child-safety guidelines before publishing.",
       accent: "forest",
     },
     {
       number: "04",
-      title: "Share and participate",
+      title: "Share and gather support",
       description:
-        "Share your entry and let others discover it. Visitors can vote according to the contest's voting rules.",
+        "Once approved, receive your live link with 1-click WhatsApp, Facebook, and Instagram sharing cards to invite family and friends to vote.",
       accent: "coral",
     },
   ];
@@ -48,22 +48,27 @@ export default function HowItWorksPage() {
   const votingPoints = [
     {
       index: "1",
-      text: "Voters do not need a separate voter account, according to the planned voting experience.",
+      text: "Quick 1-click Google verification ensures free, fair voting without long registration forms or passwords.",
     },
     {
       index: "2",
-      text: "Each verified Google account can cast exactly 1 official vote in the contest.",
+      text: "Each verified Google account receives 1 official vote per contestant. You can support multiple contestants with 1 vote each.",
     },
     {
       index: "3",
-      text: "Public entry pages display vote counts.",
+      text: "To preserve integrity, parents cannot vote for their own child's entry, and votes cannot be undone once sealed.",
+    },
+    {
+      index: "4",
+      text: "Voters can also submit their own baby into the contest anytime using the same verified Google account.",
     },
   ];
 
   const importantNotes = [
-    "Read the rules of the specific contest before submitting.",
-    "Submissions are published after the automated checks pass; the final error, rejection and retry behavior still needs to be defined.",
-    "Contest dates, eligibility and winner selection depend on the rules shown for that contest.",
+    "Entry is 100% free with no hidden charges, entry fees, or paid voting tiers.",
+    "Contestants must be up to 24 months old (2 years) on the date of submission.",
+    "Parent contact details and addresses remain strictly confidential and are never published.",
+    "Winners are finalized by audited, verified community vote tallies at contest close.",
   ];
 
   return (

@@ -24,114 +24,127 @@ const FAQS_DATA: FaqItem[] = [
     category: "General",
     question: "What is A2ZUK?",
     answer:
-      "A2ZUK is a platform where people can discover contests, submit entries and support participating entries through voting.",
+      "A2ZUK is a joyful, family-first contest platform where parents can celebrate their little ones in a safe environment, share memories, and gather genuine support from relatives, friends, and the community.",
   },
   {
     id: "gen-2",
     category: "General",
-    question: "Do I need an account to vote?",
+    question: "Is it free to participate?",
     answer:
-      "The planned voting experience does not require a separate voter account.",
+      "Yes, 100% Free! There are no entry fees, no hidden registration charges, and no paid votes. Every child participates with equal standing.",
   },
   {
     id: "gen-3",
     category: "General",
-    question: "Where can I find a contest's rules?",
+    question: "Do I need an account to vote?",
     answer:
-      "Open the contest's details page to review its eligibility requirements, dates, submission instructions and voting rules.",
+      "No lengthy registration is required. To ensure 100% fair voting and eliminate automated bot voting, voters simply click 'Verify with Google' to cast their 1 official vote per contestant.",
+  },
+  {
+    id: "gen-4",
+    category: "General",
+    question: "Where can I find a contest's rules and deadlines?",
+    answer:
+      "Open any contest's page or visit our 'How It Works' guide to review full eligibility requirements, category ranges, and voting guidelines.",
   },
 
   // Category: Participation
   {
     id: "part-1",
     category: "Participation",
-    question: "How do I participate in a contest?",
+    question: "What is the age limit for baby photo contests?",
     answer:
-      "Open a contest, review its rules and use the submission form to provide the required information and upload your entry.",
+      "Children must be between 0 and 24 months (up to 2 years old) at the time of entry. We have 3 fair age brackets: Under 6 Months, Under 12 Months, and Up to 24 Months, auto-matched from the baby's date of birth.",
   },
   {
     id: "part-2",
     category: "Participation",
-    question: "When will my entry appear publicly?",
+    question: "How do I submit an entry?",
     answer:
-      "Entries are planned to appear after they pass the platform's automated checks. If a submission fails a check, the exact message and next steps will depend on the final submission flow.",
+      "Click 'Participate Now' on the contest page, enter your baby's display name and date of birth, fill in your guardian contact info, upload your favourite clear photo, check the guardian declarations, and submit.",
   },
   {
     id: "part-3",
     category: "Participation",
-    question: "Can I edit or delete my submitted entry?",
-    answer: "This needs a decision before we publish a definitive answer.",
-    isPendingDecision: true,
+    question: "When will my baby's entry appear on the leaderboard?",
+    answer:
+      "Every entry undergoes a safety and quality review by our moderation team (usually within 2 to 24 hours). You will receive an immediate confirmation email upon submission, and a live celebration email with your link as soon as it is approved!",
+  },
+  {
+    id: "part-4",
+    category: "Participation",
+    question: "Can I update or withdraw my submitted entry?",
+    answer:
+      "Yes. Parents and legal guardians retain full control over their content. You can request a photo update, detail correction, or complete withdrawal at any time by contacting our support team at support@a2zuk.in with your entry reference code.",
   },
 
   // Category: Photo submissions
   {
     id: "photo-1",
     category: "Photo submissions",
-    question: "What kind of photo can I submit?",
+    question: "What kind of photo should I submit?",
     answer:
-      "Follow the photo and content requirements displayed on the specific contest's submission page. The exact file types, size limits and content restrictions must be finalized.",
+      "Upload a clear, authentic, high-quality picture of your baby (JPG, PNG, or WebP up to 10 MB). The child's face should be clearly visible in good lighting. Avoid heavy digital filters, borders, commercial watermarks, or studio logos.",
   },
   {
     id: "photo-2",
     category: "Photo submissions",
-    question: "Can I submit a photo of my child?",
+    question: "Who is allowed to submit a photo?",
     answer:
-      "For a child-focused contest, the submission process should require the appropriate parent or legal guardian authorization. The precise consent wording and verification process must be established before launch.",
+      "Only the parent or legal guardian may submit a photo of their child. You must have full legal authority and parental consent to submit and share the photograph for contest participation.",
   },
   {
     id: "photo-3",
     category: "Photo submissions",
-    question: "Why was my submission not published?",
+    question: "Why would a photo be rejected?",
     answer:
-      "Automated checks may prevent a submission from being published. The final product should explain the relevant issue and what the participant can do next, where applicable.",
+      "Submissions may be rejected if the photo is extremely blurry, contains inappropriate content, displays prominent commercial advertising, or violates child safety standards. If rejected, you will receive an email letting you submit a fresh, eligible photo.",
   },
 
   // Category: Voting
   {
     id: "vote-1",
     category: "Voting",
-    question: "How many votes can I cast in the contest?",
+    question: "How does the voting system work?",
     answer:
-      "Under our official election voting system, each verified Google account receives exactly 1 official vote in the contest.",
+      "To ensure fairness and prevent spam, each verified Google account receives 1 official vote per contestant. You are welcome to vote for multiple different babies you admire, but you can only vote once per baby. Once cast, your vote for that baby is permanent.",
   },
   {
     id: "vote-2",
     category: "Voting",
-    question: "Can I change my vote after casting it?",
+    question: "Can parents vote for their own child?",
     answer:
-      "No. In accordance with election principles, once you cast your vote for a contestant, your ballot is permanently sealed and cannot be changed or transferred to another child.",
+      "To uphold fair election principles, parents cannot vote for their own child. Instead, parents receive an instant WhatsApp, Facebook, and Instagram share card to easily invite family, friends, and colleagues to support their baby.",
   },
   {
     id: "vote-3",
     category: "Voting",
-    question: "Can I see the vote count?",
-    answer: "Entry pages are planned to display public vote counts.",
+    question: "If I cast a vote for a baby, can I also enter my own baby into the contest?",
+    answer:
+      "Yes, absolutely! Voting and participating are completely open. You can support other contestants and submit your own baby's entry using the same verified Google account.",
   },
   {
     id: "vote-4",
     category: "Voting",
-    question: "How are winners selected?",
+    question: "How are winners determined?",
     answer:
-      "This must be explained in each contest's rules. We should not promise that the highest vote count always wins unless that is the confirmed rule for that contest.",
+      "Winners are determined by verified community vote tallies at the close of the contest period. All votes undergo automated cryptographic and velocity integrity checks to ensure all tallies represent genuine, fair human choices.",
   },
 
   // Category: Privacy & Safety
   {
     id: "priv-1",
     category: "Privacy & Safety",
-    question: "How is my submitted information used?",
+    question: "What information is visible to the public?",
     answer:
-      "The Privacy Policy should explain which information is collected, why it is needed, how entries are displayed publicly and how users can raise privacy concerns.",
+      "Only your baby's display name, age category, city, and submitted photo are displayed on the public contest page. Guardian phone numbers, email addresses, and street addresses remain strictly confidential and are never shared publicly or sold.",
   },
   {
     id: "priv-2",
     category: "Privacy & Safety",
-    question:
-      "What should I do if I see inappropriate content or suspect unfair voting?",
+    question: "What should I do if I suspect fraudulent voting or see inappropriate content?",
     answer:
-      "The final support and reporting process needs to be decided before we publish specific instructions.",
-    isPendingDecision: true,
+      "Please contact our integrity team right away at support@a2zuk.in with the contestant's public page link. We review all reports promptly and take immediate action against any policy violations.",
   },
 ];
 

@@ -45,20 +45,20 @@ export function BeforeYouBeginCard() {
             </p>
           </div>
 
-          {/* Step 03 - Automated Checks Wording */}
+          {/* Step 03 - Safety & Quality Review Wording */}
           <div className="flex items-start gap-4">
             <span className="font-bold text-sm text-[#D4E865] shrink-0 mt-0.5">
               03
             </span>
             <p className="text-sm sm:text-base font-semibold text-white/95">
-              Fast automated checks
+              Fast safety &amp; quality review
             </p>
           </div>
         </div>
 
         {/* Card Footer Microcopy */}
         <p className="pt-4 border-t border-white/10 text-xs text-white/70 leading-relaxed">
-          Entries are published automatically once automated checks pass.
+          Entries go live on the leaderboard as soon as our team completes safety &amp; quality review.
         </p>
       </div>
     </div>

@@ -170,6 +170,66 @@ async function ContestDetailContent({
         </ScrollReveal>
       )}
 
+      {/* Official Guidelines & Fair Play Rules Card */}
+      <ScrollReveal direction="up">
+        <section
+          aria-label="Contest rules and guidelines"
+          className="w-full rounded-[24px] sm:rounded-[32px] bg-white border border-[#EFECE4] p-6 sm:p-8 shadow-xs"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-5 border-b border-[#EFECE4]">
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#F2653B]">
+                Official Contest Rules
+              </span>
+              <h2 className="text-xl sm:text-2xl font-bold text-[#1B382B] tracking-tight mt-0.5">
+                Eligibility &amp; Fair Play Standards
+              </h2>
+            </div>
+            <Link
+              href="/how-it-works"
+              className="text-xs font-semibold text-[#234E3D] hover:underline inline-flex items-center gap-1"
+            >
+              <span>View full guide</span>
+              <span>→</span>
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 pt-6">
+            <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#EFECE4] space-y-1.5">
+              <span className="text-2xl" aria-hidden="true">👶</span>
+              <h3 className="font-bold text-sm text-[#1B382B]">Age Limit: Up to 24 Months</h3>
+              <p className="text-xs text-[#5A6D61] leading-relaxed">
+                Open to all babies from newborn up to 2 years old, organized into 3 balanced age categories.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#EFECE4] space-y-1.5">
+              <span className="text-2xl" aria-hidden="true">🎟️</span>
+              <h3 className="font-bold text-sm text-[#1B382B]">100% Free Entry</h3>
+              <p className="text-xs text-[#5A6D61] leading-relaxed">
+                Zero entry fee, zero hidden costs, and absolutely no paid votes. Every participant has equal standing.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#EFECE4] space-y-1.5">
+              <span className="text-2xl" aria-hidden="true">🗳️</span>
+              <h3 className="font-bold text-sm text-[#1B382B]">1 Vote Per Baby</h3>
+              <p className="text-xs text-[#5A6D61] leading-relaxed">
+                Verified with 1-click Google sign-in. Voters can support multiple babies, with 1 permanent vote per baby.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#EFECE4] space-y-1.5">
+              <span className="text-2xl" aria-hidden="true">🛡️</span>
+              <h3 className="font-bold text-sm text-[#1B382B]">Anti-Self-Vote &amp; Safety</h3>
+              <p className="text-xs text-[#5A6D61] leading-relaxed">
+                Parents share their baby’s page with loved ones. Automated anti-bot audits ensure 100% genuine tallies.
+              </p>
+            </div>
+          </div>
+        </section>
+      </ScrollReveal>
+
       {/* Published Contest Entries Gallery */}
       {contest.status !== "upcoming" && (
         <ContestEntriesGallery

@@ -66,16 +66,23 @@ export default function HelpPage() {
                 >
                   Still Need Help?
                 </h2>
-                <p className="text-[#4A5D52] text-sm sm:text-base leading-relaxed max-w-md mx-auto">
-                  Couldn&apos;t find the answer you were looking for?
+                <p className="text-[#4A5D52] text-sm sm:text-base leading-relaxed max-w-md mx-auto mb-6">
+                  Have questions about your entry, photo verification, or voting? Our team is here to help!
                 </p>
-                <div className="mt-5 p-4 rounded-xl bg-white border border-[#EFECE4] text-xs text-[#5A6D61] max-w-md mx-auto">
-                  <span className="font-semibold text-[#1B382B] block mb-1">
-                    Support Notice:
+                <div className="p-5 rounded-2xl bg-white border border-[#EFECE4] text-xs sm:text-sm text-[#5A6D61] max-w-md mx-auto space-y-2 shadow-2xs">
+                  <span className="font-bold text-[#1B382B] text-sm block">
+                    Contact A2ZUK Support
                   </span>
-                  Official support contact channels and escalation procedures are
-                  currently being established and will be published prior to public
-                  launch.
+                  <p className="text-xs text-[#5A6D61]">
+                    Email us anytime and we will respond within 24 hours:
+                  </p>
+                  <a
+                    href="mailto:support@a2zuk.in"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white bg-[#234E3D] hover:bg-[#1A3B2E] transition-all shadow-2xs mt-1"
+                  >
+                    <span>✉️</span>
+                    <span>support@a2zuk.in</span>
+                  </a>
                 </div>
               </div>
             </ScrollReveal>
