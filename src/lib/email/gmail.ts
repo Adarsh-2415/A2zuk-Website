@@ -194,9 +194,10 @@ export async function sendModerationAlertEmail(params: ModerationEmailParams): P
 
   try {
     await transporter.sendMail({
-      from: `"A2ZUK Contest" <${process.env.GMAIL_USER}>`,
+      from: `"A2ZUK Contest Team" <${process.env.GMAIL_USER}>`,
       to: adminEmails,
-      subject: `🍼 [Action Needed] New Entry: ${params.babyName} (${categoryLabel})`,
+      replyTo: process.env.GMAIL_USER,
+      subject: `[Moderation] New Contest Entry: ${params.babyName} (${categoryLabel})`,
       html: htmlContent,
     });
     console.log(`[Gmail SMTP] Moderation email dispatched successfully to [${adminEmails.join(", ")}] for entry ${params.entryId}`);
@@ -270,14 +271,14 @@ export async function sendParentSubmissionReceivedEmail(
 <body>
   <div class="card">
     <div class="header">
-      <h1>🍼 Entry Received!</h1>
-      <p>Thank you for participating in A2ZUK Baby Photo Contest</p>
+      <h1>Entry Received</h1>
+      <p>A2ZUK Baby Photo Contest</p>
     </div>
     
     <div class="body">
       <div class="greeting">Hello ${params.guardianName},</div>
       <p class="intro">
-        Thank you for submitting <strong>${params.babyName}</strong> to the contest! We are thrilled to welcome your little star to the A2ZUK family.
+        Thank you for submitting <strong>${params.babyName}</strong> to the contest. We are pleased to welcome your entry to the A2ZUK family.
       </p>
 
       <div class="details">
@@ -295,32 +296,32 @@ export async function sendParentSubmissionReceivedEmail(
     }
         <div class="row">
           <span class="label">Current Status:</span>
-          <span class="status-badge">⏳ Under Verification</span>
+          <span class="status-badge">Under Verification</span>
         </div>
       </div>
 
       <div class="notice-box">
         <strong>What happens next?</strong><br/>
-        Our team reviews every photo to ensure safety and quality standards. As soon as your entry is approved, you will receive another email with your public link to start sharing with relatives on WhatsApp!
+        Our moderation team reviews every submission to ensure child-safety and quality standards. Once your photo is approved, you will receive an email notification with your live contest link to share with friends and relatives!
       </div>
 
       <p style="font-size: 13px; color: #5A6D61; text-align: center; margin-bottom: 16px;">
-        You can preview your baby's entry or check your submission anytime in your parent dashboard:
+        You can preview your entry or check your submission status in your dashboard:
       </p>
 
       <div class="actions">
         <a href="${entryPreviewUrl}" class="btn btn-primary">
-          👀 Preview Baby's Entry Page
+          Preview Entry Page &rarr;
         </a>
         <a href="${profileUrl}" class="btn btn-secondary">
-          👤 My Profile Dashboard
+          Parent Dashboard &rarr;
         </a>
       </div>
     </div>
 
     <div class="footer">
-      Sent with love from the A2ZUK Baby Photo Contest Team.<br/>
-      If you did not submit this entry, please contact support.
+      This confirmation was sent regarding your contest submission on A2ZUK (<a href="${siteUrl}" style="color: #234E3D; text-decoration: none;">a2zuk.in</a>).<br/>
+      Need help or wish to update your entry? Contact support at <a href="mailto:support@a2zuk.in" style="color: #234E3D; text-decoration: none;">support@a2zuk.in</a>.
     </div>
   </div>
 </body>
@@ -338,20 +339,22 @@ Entry Details:
 - Status: Under Verification
 
 What happens next?
-Our team reviews each photo for safety and quality. The moment your entry is approved, you will receive an email notification with your live contest link to share with friends and family on WhatsApp!
+Our moderation team reviews each photo for safety and quality standards. As soon as your entry is approved, you will receive another email notification with your live contest link to share with family and friends!
 
 Preview your entry: ${entryPreviewUrl}
-My Profile Dashboard: ${profileUrl}
+Parent Dashboard: ${profileUrl}
 
 Best regards,
-A2ZUK Baby Photo Contest Team
+A2ZUK Contest Team
+Support: support@a2zuk.in
   `.trim();
 
   try {
     await transporter.sendMail({
-      from: `"A2ZUK Baby Contest" <${process.env.GMAIL_USER}>`,
+      from: `"A2ZUK Contest Team" <${process.env.GMAIL_USER}>`,
       to: parentEmail,
-      subject: `🍼 We received ${params.babyName}'s entry! - A2ZUK Baby Photo Contest`,
+      replyTo: process.env.GMAIL_USER,
+      subject: `Entry Confirmation: ${params.babyName} - A2ZUK Baby Contest`,
       html: htmlContent,
       text: textContent,
     });
@@ -422,40 +425,40 @@ export async function sendParentEntryApprovedEmail(
 <body>
   <div class="card">
     <div class="header">
-      <h1>🎉 Congratulations!</h1>
-      <p>${params.babyName}'s Photo is Approved &amp; Live!</p>
+      <h1>Entry Approved</h1>
+      <p>${params.babyName}'s photo is now live on the leaderboard</p>
     </div>
     
     <div class="body">
       <div class="greeting">Hello ${params.guardianName},</div>
       <p class="celebration">
-        Great news! <strong>${params.babyName}</strong>'s entry has passed verification and is now officially live on the A2ZUK Baby Photo Contest leaderboard!
+        Great news! <strong>${params.babyName}</strong>'s entry has passed verification and is now officially live on the A2ZUK Baby Photo Contest leaderboard.
       </p>
 
       <div class="share-box">
-        <h3>📲 Share with Loved Ones on WhatsApp</h3>
+        <h3>Share with Friends &amp; Family</h3>
         <p>
-          Gather support for ${params.babyName}! Every family member and friend gets 1 official vote in the contest.
+          Gather support for ${params.babyName}! Relatives and friends can cast their vote using quick Google verification.
         </p>
         <a href="${whatsappUrl}" class="btn-wa" target="_blank">
-          Share to WhatsApp Now 💬
+          Share on WhatsApp &rarr;
         </a>
       </div>
 
       <div class="actions">
         <a href="${entryLiveUrl}" class="btn-page">
-          👀 View ${params.babyName}'s Contest Page
+          View Contest Page &rarr;
         </a>
       </div>
 
       <div class="rules-reminder">
-        💡 <strong>Fair Voting Rule:</strong> Each person receives 1 permanent vote verified via Google Sign-In. Encourage everyone in your family circle to cast their ballot for ${params.babyName}!
+        <strong>Fair Voting Rule:</strong> Each verified person receives 1 official vote per contestant. Encourage your family and friends to support ${params.babyName}!
       </div>
     </div>
 
     <div class="footer">
-      Sent with love from the A2ZUK Baby Photo Contest Team.<br/>
-      Need assistance? Reply directly to this email.
+      This notification was sent regarding your contest submission on A2ZUK (<a href="${siteUrl}" style="color: #234E3D; text-decoration: none;">a2zuk.in</a>).<br/>
+      Need help or wish to update your entry? Contact support at <a href="mailto:support@a2zuk.in" style="color: #234E3D; text-decoration: none;">support@a2zuk.in</a>.
     </div>
   </div>
 </body>
@@ -463,9 +466,9 @@ export async function sendParentEntryApprovedEmail(
   `;
 
   const textContent = `
-Congratulations ${params.guardianName}!
+Hello ${params.guardianName},
 
-Great news! ${params.babyName}'s photo is approved and now officially LIVE on the A2ZUK Baby Photo Contest leaderboard!
+Great news! ${params.babyName}'s photo is approved and now officially live on the A2ZUK Baby Photo Contest leaderboard!
 
 View the live contest page:
 ${entryLiveUrl}
@@ -473,17 +476,19 @@ ${entryLiveUrl}
 Share on WhatsApp:
 ${whatsappUrl}
 
-Reminder: Every friend and relative receives 1 official vote in the contest. Start gathering support for ${params.babyName} today!
+Reminder: Every friend and relative receives 1 official vote per contestant. Start gathering support for ${params.babyName} today!
 
 Best regards,
-A2ZUK Baby Photo Contest Team
+A2ZUK Contest Team
+Support: support@a2zuk.in
   `.trim();
 
   try {
     await transporter.sendMail({
-      from: `"A2ZUK Baby Contest" <${process.env.GMAIL_USER}>`,
+      from: `"A2ZUK Contest Team" <${process.env.GMAIL_USER}>`,
       to: parentEmail,
-      subject: `🎉 Hooray! ${params.babyName}'s photo is now LIVE on A2ZUK!`,
+      replyTo: process.env.GMAIL_USER,
+      subject: `Entry Approved: ${params.babyName} is now live on A2ZUK`,
       html: htmlContent,
       text: textContent,
     });
@@ -573,14 +578,14 @@ export async function sendParentEntryRejectedEmail(
 
       <div class="actions">
         <a href="${submitUrl}" class="btn-submit">
-          📸 Submit a New Photo for ${params.babyName}
+          Submit a New Photo &rarr;
         </a>
       </div>
     </div>
 
     <div class="footer">
-      Sent from the A2ZUK Baby Photo Contest Team.<br/>
-      If you have questions regarding this decision, feel free to reply directly to this email.
+      This notification was sent regarding your contest submission on A2ZUK (<a href="${siteUrl}" style="color: #234E3D; text-decoration: none;">a2zuk.in</a>).<br/>
+      If you have questions regarding this review, contact support at <a href="mailto:support@a2zuk.in" style="color: #234E3D; text-decoration: none;">support@a2zuk.in</a>.
     </div>
   </div>
 </body>
@@ -590,22 +595,24 @@ export async function sendParentEntryRejectedEmail(
   const textContent = `
 Hello ${params.guardianName},
 
-Thank you for participating in the A2ZUK Baby Photo Contest. During our routine photo quality and safety review, our team was unfortunately unable to approve the submitted photo of ${params.babyName} for the public gallery.
+Thank you for participating in the A2ZUK Baby Photo Contest. During our photo quality and safety review, our team was unable to approve the submitted photo of ${params.babyName} for the public gallery.
 
-Common reasons include blurry/dark photos, multiple faces in the frame, or digital filters/stickers.
+Common reasons include blurry or dark photos, multiple faces in the frame, or digital stickers and filters.
 
 You are warmly invited to submit a clear, fresh photo of ${params.babyName}:
 ${submitUrl}
 
 Best regards,
-A2ZUK Baby Photo Contest Team
+A2ZUK Contest Team
+Support: support@a2zuk.in
   `.trim();
 
   try {
     await transporter.sendMail({
-      from: `"A2ZUK Baby Contest" <${process.env.GMAIL_USER}>`,
+      from: `"A2ZUK Contest Team" <${process.env.GMAIL_USER}>`,
       to: parentEmail,
-      subject: `Update regarding ${params.babyName}'s entry - A2ZUK Baby Photo Contest`,
+      replyTo: process.env.GMAIL_USER,
+      subject: `Entry Update: ${params.babyName} - A2ZUK Baby Contest`,
       html: htmlContent,
       text: textContent,
     });
