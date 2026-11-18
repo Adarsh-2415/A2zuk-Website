@@ -77,6 +77,13 @@ const FAQS_DATA: FaqItem[] = [
     answer:
       "Yes. Parents and legal guardians retain full control over their content. You can request a photo update, detail correction, or complete withdrawal at any time by contacting our support team at support@a2zuk.in with your entry reference code.",
   },
+  {
+    id: "part-5",
+    category: "Participation",
+    question: "Is age proof required to participate or claim prizes?",
+    answer:
+      "Parents must provide accurate date-of-birth information at entry. If your baby wins, you must submit valid government age verification documents (such as an Aadhaar Card or official Birth Certificate) to confirm eligibility. Entries with mismatched or falsified ages (e.g. entering an older child in an infant category) will be disqualified and removed from the winners' list.",
+  },
 
   // Category: Photo submissions
   {
@@ -114,7 +121,7 @@ const FAQS_DATA: FaqItem[] = [
     category: "Voting",
     question: "Can parents vote for their own child?",
     answer:
-      "To uphold fair election principles, parents cannot vote for their own child. Instead, parents receive an instant WhatsApp, Facebook, and Instagram share card to easily invite family, friends, and colleagues to support their baby.",
+      "Yes! Parents can cast their official vote for their own child, just like any verified Google user (1 vote per child). Parents also receive instant WhatsApp and social share links to invite family and friends to support their baby.",
   },
   {
     id: "vote-3",
@@ -126,9 +133,9 @@ const FAQS_DATA: FaqItem[] = [
   {
     id: "vote-4",
     category: "Voting",
-    question: "How are winners determined?",
+    question: "How are winners determined and verified?",
     answer:
-      "Winners are determined by verified community vote tallies at the close of the contest period. All votes undergo automated cryptographic and velocity integrity checks to ensure all tallies represent genuine, fair human choices.",
+      "Winners are determined by verified community vote tallies at the close of the contest period. All votes undergo automated integrity checks. Additionally, all winners must submit official age documentation (Aadhaar card or Birth Certificate) before prizes are disbursed; failure to verify age results in disqualification.",
   },
 
   // Category: Privacy & Safety

@@ -76,17 +76,6 @@ export async function POST(request: Request) {
     );
   }
 
-  // Anti-Self-Vote: Parents cannot vote for their own entry
-  if (entryRow.user_id && entryRow.user_id === user.id) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: "Parents cannot vote for their own child's photo. Share with friends to gather votes!",
-      },
-      { status: 403 },
-    );
-  }
-
   const clientIp = extractClientIp(request.headers);
   const ipHash = hashWithIpSalt(clientIp);
   const userAgent = request.headers.get("user-agent")?.trim() ?? "";

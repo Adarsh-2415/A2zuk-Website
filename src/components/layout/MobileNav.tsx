@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageTranslator } from "@/components/LanguageTranslator";
 
 interface MobileNavProps {
   user?: { email?: string; name?: string } | null;
@@ -90,32 +92,32 @@ export function MobileNav({ user }: MobileNavProps) {
       {isOpen && (
         <div
           id="mobile-nav-panel"
-          className="absolute right-0 top-12 w-[calc(100vw-2rem)] max-w-sm rounded-3xl bg-gradient-to-b from-[#FAF8F5]/98 via-[#FDF9F4]/98 to-[#FDF2EC]/98 backdrop-blur-2xl border border-[#EAE2D2]/80 shadow-2xl p-5 space-y-4 z-50 ring-1 ring-black/5 animate-in fade-in slide-in-from-top-2 duration-200 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)]"
+          className="absolute right-0 top-12 w-[calc(100vw-2rem)] max-w-sm rounded-3xl bg-gradient-to-b from-[#FAF8F5]/98 via-[#FDF9F4]/98 to-[#FDF2EC]/98 dark:from-[#112218]/98 dark:via-[#14281D]/98 dark:to-[#183123]/98 backdrop-blur-2xl border border-[#EAE2D2]/80 dark:border-white/10 shadow-2xl p-5 space-y-4 z-50 ring-1 ring-black/5 animate-in fade-in slide-in-from-top-2 duration-200 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)]"
         >
           {/* User Status Card */}
           {user ? (
             <Link
               href="/profile"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 p-3 rounded-2xl bg-[#234E3D]/8 border border-[#234E3D]/15 text-[#1B382B] transition-all hover:bg-[#234E3D]/12"
+              className="flex items-center gap-3 p-3 rounded-2xl bg-[#234E3D]/8 dark:bg-white/10 border border-[#234E3D]/15 dark:border-white/15 text-[#1B382B] dark:text-[#E2ECE5] transition-all hover:bg-[#234E3D]/12"
             >
               <span className="w-8 h-8 rounded-full bg-[#234E3D] text-white flex items-center justify-center text-xs font-bold shrink-0">
                 {user.name ? user.name[0]?.toUpperCase() : "👤"}
               </span>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-[#1B382B] truncate">{user.name || "My Account"}</p>
-                <p className="text-[11px] text-[#5A6D61] truncate">{user.email}</p>
+                <p className="text-xs font-bold text-[#1B382B] dark:text-[#E2ECE5] truncate">{user.name || "My Account"}</p>
+                <p className="text-[11px] text-[#5A6D61] dark:text-[#95A59B] truncate">{user.email}</p>
               </div>
-              <span className="text-xs font-semibold text-[#234E3D]">My Profile →</span>
+              <span className="text-xs font-semibold text-[#234E3D] dark:text-[#D4E865]">My Profile →</span>
             </Link>
           ) : (
             <Link
               href="/profile"
               onClick={() => setIsOpen(false)}
-              className="flex items-center justify-between p-3 rounded-2xl bg-[#FAF8F5] border border-[#EFECE4] text-xs font-semibold text-[#1B382B] hover:bg-[#F2EFE8]"
+              className="flex items-center justify-between p-3 rounded-2xl bg-[#FAF8F5] dark:bg-[#1A2820] border border-[#EFECE4] dark:border-white/10 text-xs font-semibold text-[#1B382B] dark:text-[#E2ECE5] hover:bg-[#F2EFE8]"
             >
               <span>Parent Login / My Profile</span>
-              <span className="text-[#234E3D]">Sign In →</span>
+              <span className="text-[#234E3D] dark:text-[#D4E865]">Sign In →</span>
             </Link>
           )}
 
@@ -131,22 +133,33 @@ export function MobileNav({ user }: MobileNavProps) {
                   className={cn(
                     "flex items-center justify-between px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-150",
                     isActive
-                      ? "text-[#234E3D] bg-[#234E3D]/12 font-bold shadow-xs"
-                      : "text-[#1B382B] hover:text-[#234E3D] hover:bg-[#FAF8F5]"
+                      ? "text-[#234E3D] dark:text-[#D4E865] bg-[#234E3D]/12 dark:bg-white/10 font-bold shadow-xs"
+                      : "text-[#1B382B] dark:text-[#E2ECE5] hover:text-[#234E3D] dark:hover:text-[#D4E865] hover:bg-[#FAF8F5] dark:hover:bg-white/5"
                   )}
                   aria-current={isActive ? "page" : undefined}
                 >
                   <span>{item.title}</span>
                   {isActive && (
-                    <span className="w-2 h-2 rounded-full bg-[#234E3D]" />
+                    <span className="w-2 h-2 rounded-full bg-[#234E3D] dark:bg-[#D4E865]" />
                   )}
                 </Link>
               );
             })}
           </div>
 
+          {/* Quick Language & Theme Bar for Mobile */}
+          <div className="pt-3 border-t border-[#EFECE4] dark:border-white/10 flex items-center justify-between gap-2">
+            <span className="text-xs font-semibold text-[#5A6D61] dark:text-[#95A59B]">
+              Language &amp; Mode
+            </span>
+            <div className="flex items-center gap-2">
+              <LanguageTranslator variant="footer" />
+              <ThemeToggle />
+            </div>
+          </div>
+
           {/* Mobile CTA */}
-          <div className="pt-3 border-t border-[#EFECE4]">
+          <div className="pt-1">
             <Link
               href="/contests/baby-photo-contest-1/submit"
               onClick={() => setIsOpen(false)}

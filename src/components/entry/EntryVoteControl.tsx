@@ -83,7 +83,7 @@ export default function EntryVoteControl({
   }, [contestSlug, entryCode, isVotingOpen]);
 
   function handleInitiateVote() {
-    if (!isVotingOpen || isSubmitting || hasVotedForThisEntry || isParentOwner) {
+    if (!isVotingOpen || isSubmitting || hasVotedForThisEntry) {
       return;
     }
 
@@ -155,8 +155,7 @@ export default function EntryVoteControl({
   const isDisabled =
     !isVotingOpen ||
     isSubmitting ||
-    hasVotedForThisEntry ||
-    isParentOwner;
+    hasVotedForThisEntry;
 
   let buttonLabel = `Cast Vote for ${displayName}`;
   if (!isVotingOpen) {
@@ -165,8 +164,6 @@ export default function EntryVoteControl({
     buttonLabel = "Recording Vote…";
   } else if (hasVotedForThisEntry) {
     buttonLabel = `Voted for ${displayName} ✓`;
-  } else if (isParentOwner) {
-    buttonLabel = "Parent View (Cannot Self-Vote)";
   }
 
   return (
@@ -218,8 +215,6 @@ export default function EntryVoteControl({
               "Voting is only open while the contest is active."
             ) : isLoadingStatus ? (
               "Checking voting status…"
-            ) : isParentOwner ? (
-              "🔒 Parents cannot vote for their own child. Share this entry to gather votes from family and friends!"
             ) : hasVotedForThisEntry ? (
               `✅ Your official vote is recorded for ${displayName}.`
             ) : (

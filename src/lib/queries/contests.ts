@@ -27,6 +27,7 @@ export interface ContestWinnerSummary {
     city: string;
     state: string;
     voteCount: number;
+    photoUrl?: string;
   };
 }
 
@@ -218,6 +219,7 @@ export async function getContestWinners(
         city,
         state,
         vote_count,
+        public_photo_path,
         status
       )
     `,
@@ -238,7 +240,16 @@ export async function getContestWinners(
       city: string;
       state: string;
       vote_count: number;
+      public_photo_path: string | null;
     };
+
+    let photoUrl: string | undefined;
+    if (entry.public_photo_path && entry.public_photo_path.trim() !== "") {
+      const { data: storageData } = supabase.storage
+        .from("contest-photos-public")
+        .getPublicUrl(entry.public_photo_path);
+      photoUrl = storageData.publicUrl;
+    }
 
     return {
       id: row.id,
@@ -252,6 +263,7 @@ export async function getContestWinners(
         city: entry.city,
         state: entry.state,
         voteCount: entry.vote_count,
+        photoUrl,
       },
     };
   });

@@ -104,10 +104,23 @@ export default function EntryVotingPanel({
 
               <p className="text-[11px] text-[#5A6D61] leading-relaxed pt-1 border-t border-[#EFECE4]">
                 {isPending
-                  ? "Voting will open automatically once moderation checks pass. Parents cannot cast votes for their own child."
-                  : "Parents cannot cast votes for their own child. Share your baby's page with friends and family to gain support!"}
+                  ? "Voting will open automatically once moderation checks pass."
+                  : "You can cast your 1 official vote for your child below! Also share your baby's page with family and friends to gather more support!"}
               </p>
             </div>
+
+            {/* Parent Voting Control */}
+            {!isPending && (
+              <div className="pt-1">
+                <EntryVoteControl
+                  contestSlug={entry.contestSlug}
+                  entryCode={entry.slug}
+                  displayName={entry.displayName}
+                  initialVoteCount={entry.voteCount ?? 0}
+                  isVotingOpen={isVotingOpen}
+                />
+              </div>
+            )}
 
             {/* Parent WhatsApp Sharing Card */}
             <WhatsAppShareCard

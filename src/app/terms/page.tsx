@@ -132,7 +132,7 @@ export default function TermsPage() {
               Each verified Google account receives 1 official vote per contestant. You are welcome to vote for multiple different contestants, but cannot vote more than once for the same child.
             </li>
             <li>
-              Parents and guardians cannot cast votes for their own child&apos;s entry.
+              Parents and legal guardians are permitted to cast 1 official vote for their own child, just as any verified community member.
             </li>
             <li>
               Once cast for a contestant, the vote is permanently sealed and cannot be changed or transferred.
@@ -182,12 +182,17 @@ export default function TermsPage() {
       number: "8",
       title: "Winners, prizes and awards",
       content: (
-        <p>
-          Winner selection methodology, prize tiers, and post-contest
-          audit verification procedures are governed by the specific rules approved
-          for each contest. Public vote counts displayed during active voting are
-          provisional and subject to automated audit before final declarations are made.
-        </p>
+        <>
+          <p>
+            Winner selection methodology, prize tiers, and post-contest
+            audit verification procedures are governed by the specific rules approved
+            for each contest. Public vote counts displayed during active voting are
+            provisional and subject to automated audit before final declarations are made.
+          </p>
+          <p className="mt-2">
+            <strong>Mandatory Age &amp; Identity Verification:</strong> All prospective winners must submit valid government-issued proof of age (such as an Aadhaar Card or official Municipal Birth Certificate) confirming that the child met the category criteria at the time of entry. Providing inaccurate age details (such as submitting an older child in an infant category) or failing to submit required verification within the notified period will result in immediate disqualification and removal from the official winners&apos; list.
+          </p>
+        </>
       ),
     },
     {

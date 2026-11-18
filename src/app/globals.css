@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --color-brand-green: #234E3D;
@@ -10,10 +12,49 @@
   --color-canvas: #FAF8F5;
 }
 
+.dark {
+  --color-brand-green: #3B7D63;
+  --color-brand-dark: #E2ECE5;
+  --color-brand-lime: #D4E865;
+  --color-canvas: #0F1914;
+}
+
 /* Accessible focus outlines */
 :focus-visible {
   outline: 2px solid #234E3D;
   outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Google Translate Widget Seamless Overrides (Hide Google header frame & clutter)
+   ========================================================================== */
+.goog-te-banner-frame.skiptranslate,
+.goog-te-banner-frame {
+  display: none !important;
+}
+
+body {
+  top: 0px !important;
+}
+
+.goog-logo-link,
+.goog-te-gadget span {
+  display: none !important;
+}
+
+.goog-te-gadget {
+  color: transparent !important;
+  font-size: 0 !important;
+}
+
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
 }
 
 /* ==========================================================================

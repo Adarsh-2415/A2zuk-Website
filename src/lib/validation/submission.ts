@@ -79,6 +79,9 @@ export const submissionSchema = z.object({
   consentRules: z.literal(true, {
     message: "Contest rules and privacy policy acceptance is required.",
   }),
+  consentAgeVerification: z.literal(true, {
+    message: "Age accuracy declaration and document verification agreement is required.",
+  }),
 });
 
 export type ValidatedSubmissionInput = z.infer<typeof submissionSchema>;

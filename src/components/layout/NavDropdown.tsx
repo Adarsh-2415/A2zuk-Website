@@ -64,9 +64,9 @@ export function NavDropdown({ title, items, isScrolled = false }: NavDropdownPro
           "relative flex items-center gap-1.5 rounded-full transition-all duration-300 font-semibold select-none",
           isScrolled ? "px-3 pt-1 pb-2.5 text-xs" : "px-4 pt-1.5 pb-3 text-sm",
           isAnyChildActive
-            ? "text-[#234E3D] bg-white/90 shadow-xs border border-[#234E3D]/20 font-bold"
-            : "text-[#1B382B] hover:text-[#234E3D] hover:bg-white/60",
-          isOpen && "bg-white text-[#234E3D] shadow-xs ring-1.5 ring-[#234E3D]/25 font-bold"
+            ? "text-[#234E3D] dark:text-[#D4E865] bg-white/90 dark:bg-[#1A2820] shadow-xs border border-[#234E3D]/20 dark:border-white/10 font-bold"
+            : "text-[#1B382B] dark:text-[#E2ECE5] hover:text-[#234E3D] dark:hover:text-[#D4E865] hover:bg-white/60 dark:hover:bg-white/10",
+          isOpen && "bg-white dark:bg-[#1A2820] text-[#234E3D] dark:text-[#D4E865] shadow-xs ring-1.5 ring-[#234E3D]/25 font-bold"
         )}
       >
         <span className="leading-tight">{title}</span>
@@ -74,8 +74,8 @@ export function NavDropdown({ title, items, isScrolled = false }: NavDropdownPro
         {/* ChevronDown with 180deg smooth rotation */}
         <svg
           className={cn(
-            "w-3.5 h-3.5 transition-transform duration-200 text-[#4A5D52]",
-            isOpen && "rotate-180 text-[#234E3D]"
+            "w-3.5 h-3.5 transition-transform duration-200 text-[#4A5D52] dark:text-[#A0B3A7]",
+            isOpen && "rotate-180 text-[#234E3D] dark:text-[#D4E865]"
           )}
           fill="none"
           stroke="currentColor"
@@ -94,7 +94,7 @@ export function NavDropdown({ title, items, isScrolled = false }: NavDropdownPro
         {isAnyChildActive && (
           <span
             className={cn(
-              "absolute left-1/2 -translate-x-1/2 rounded-full bg-[#234E3D]",
+              "absolute left-1/2 -translate-x-1/2 rounded-full bg-[#234E3D] dark:bg-[#D4E865]",
               isScrolled ? "bottom-0.5 w-1 h-1" : "bottom-1 w-1.5 h-1.5"
             )}
             aria-hidden="true"
@@ -106,7 +106,7 @@ export function NavDropdown({ title, items, isScrolled = false }: NavDropdownPro
       <div
         onMouseLeave={() => setIsOpen(false)}
         className={cn(
-          "absolute left-1/2 -translate-x-1/2 mt-2 w-80 sm:w-88 rounded-2xl bg-gradient-to-b from-white/98 via-[#FAF8F5]/98 to-[#FDF5EE]/98 backdrop-blur-2xl p-2.5 shadow-[0_20px_50px_-10px_rgba(27,56,43,0.18),0_0_0_1px_rgba(35,78,61,0.08),inset_0_1px_2px_rgba(255,255,255,0.95)] border border-[#EAE0D0] z-50 transition-all duration-200 origin-top",
+          "absolute left-1/2 -translate-x-1/2 mt-2 w-80 sm:w-88 rounded-2xl bg-gradient-to-b from-white/98 via-[#FAF8F5]/98 to-[#FDF5EE]/98 dark:from-[#132219]/98 dark:via-[#16271D]/98 dark:to-[#111C15]/98 backdrop-blur-2xl p-2.5 shadow-[0_20px_50px_-10px_rgba(27,56,43,0.18),0_0_0_1px_rgba(35,78,61,0.08),inset_0_1px_2px_rgba(255,255,255,0.95)] border border-[#EAE0D0] dark:border-[#283C30] z-50 transition-all duration-200 origin-top",
           isOpen
             ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
             : "opacity-0 translate-y-2 scale-95 pointer-events-none"
@@ -126,8 +126,8 @@ export function NavDropdown({ title, items, isScrolled = false }: NavDropdownPro
                 className={cn(
                   "group flex items-start gap-3 p-2.5 rounded-xl border transition-all duration-200 relative",
                   isActive
-                    ? "bg-gradient-to-r from-[#EBF5EA] to-[#F7FAF4] border-[#234E3D]/25 shadow-xs"
-                    : "border-transparent hover:bg-gradient-to-r hover:from-[#F4F9F2] hover:to-[#FAF6EE] hover:border-[#234E3D]/20 hover:shadow-xs hover:translate-x-0.5"
+                    ? "bg-gradient-to-r from-[#EBF5EA] to-[#F7FAF4] dark:from-[#1E3025] dark:to-[#17251D] border-[#234E3D]/25 dark:border-[#D4E865]/30 shadow-xs"
+                    : "border-transparent hover:bg-gradient-to-r hover:from-[#F4F9F2] hover:to-[#FAF6EE] dark:hover:from-[#1E3025] dark:hover:to-[#1A2820] hover:border-[#234E3D]/20 dark:hover:border-white/10 hover:shadow-xs hover:translate-x-0.5"
                 )}
               >
                 {/* Highlighted Icon Badge */}
@@ -137,7 +137,7 @@ export function NavDropdown({ title, items, isScrolled = false }: NavDropdownPro
                       "p-2.5 rounded-xl transition-all duration-200 mt-0.5 shrink-0 flex items-center justify-center",
                       isActive
                         ? "bg-[#234E3D] text-[#D4E865] shadow-xs"
-                        : "bg-white border border-[#EAE2D2] text-[#234E3D] shadow-2xs group-hover:bg-[#234E3D] group-hover:text-[#D4E865] group-hover:border-[#234E3D] group-hover:scale-105 group-hover:shadow-xs"
+                        : "bg-white dark:bg-[#1A2820] border border-[#EAE2D2] dark:border-white/10 text-[#234E3D] dark:text-[#D4E865] shadow-2xs group-hover:bg-[#234E3D] group-hover:text-[#D4E865] group-hover:border-[#234E3D] group-hover:scale-105 group-hover:shadow-xs"
                     )}
                   >
                     {item.icon}
@@ -150,8 +150,8 @@ export function NavDropdown({ title, items, isScrolled = false }: NavDropdownPro
                       className={cn(
                         "text-sm font-semibold transition-colors truncate",
                         isActive
-                          ? "text-[#234E3D] font-bold"
-                          : "text-[#1B382B] group-hover:text-[#234E3D] group-hover:font-bold"
+                          ? "text-[#234E3D] dark:text-[#D4E865] font-bold"
+                          : "text-[#1B382B] dark:text-[#E2ECE5] group-hover:text-[#234E3D] dark:group-hover:text-[#D4E865] group-hover:font-bold"
                       )}
                     >
                       {item.title}
@@ -175,8 +175,8 @@ export function NavDropdown({ title, items, isScrolled = false }: NavDropdownPro
                     className={cn(
                       "text-xs mt-0.5 leading-snug line-clamp-1 transition-colors",
                       isActive
-                        ? "text-[#234E3D]/80 font-medium"
-                        : "text-[#5A6D61] group-hover:text-[#234E3D]/85"
+                        ? "text-[#234E3D]/80 dark:text-[#D4E865]/90 font-medium"
+                        : "text-[#5A6D61] dark:text-[#95A59B] group-hover:text-[#234E3D]/85 dark:group-hover:text-[#D4E865]"
                     )}
                   >
                     {item.description}
@@ -188,7 +188,7 @@ export function NavDropdown({ title, items, isScrolled = false }: NavDropdownPro
         </div>
 
         {/* Highlighted Footer Guide */}
-        <div className="mt-2.5 pt-2 border-t border-[#EFECE4] flex items-center justify-between px-2 text-[11px] text-[#5A6D61]">
+        <div className="mt-2.5 pt-2 border-t border-[#EFECE4] dark:border-[#283C30] flex items-center justify-between px-2 text-[11px] text-[#5A6D61] dark:text-[#95A59B]">
           <span className="flex items-center gap-1.5 font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-[#234E3D]" />
             Littlejoy Contest Guide

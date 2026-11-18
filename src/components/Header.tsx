@@ -7,6 +7,8 @@ import { MobileNav } from "./layout/MobileNav";
 import { TopBar } from "./layout/TopBar";
 import { cn } from "@/lib/utils/cn";
 import { createClient } from "@/lib/supabase/client";
+import { LanguageTranslator } from "./LanguageTranslator";
+import { ThemeToggle } from "./ThemeToggle";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -81,15 +83,15 @@ export default function Header() {
         className={cn(
           "w-full transition-all duration-300 ease-out",
           isScrolled
-            ? "max-w-[780px] mx-auto rounded-full bg-gradient-to-r from-[#EBF4E8]/95 via-[#FAF6EE]/95 to-[#FCE6D8]/95 backdrop-blur-2xl border border-white/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_16px_36px_-12px_rgba(27,56,43,0.14)] px-3 sm:px-5 py-1.5 scale-[0.98]"
-            : "max-w-full rounded-2xl sm:rounded-full bg-gradient-to-r from-[#EBF4E8]/90 via-[#FAF6EE]/90 to-[#FCE6D8]/90 backdrop-blur-xl border border-[#E8DFC8]/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.85),0_8px_24px_-8px_rgba(27,56,43,0.06)] px-4 sm:px-6 py-2 sm:py-2.5 scale-100"
+            ? "max-w-[840px] mx-auto rounded-full bg-gradient-to-r from-[#EBF4E8]/95 via-[#FAF6EE]/95 to-[#FCE6D8]/95 dark:from-[#112218]/95 dark:via-[#14281D]/95 dark:to-[#183123]/95 backdrop-blur-2xl border border-white/80 dark:border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.9),0_16px_36px_-12px_rgba(27,56,43,0.14)] px-3 sm:px-4 py-1.5 scale-[0.98]"
+            : "max-w-full rounded-2xl sm:rounded-full bg-gradient-to-r from-[#EBF4E8]/90 via-[#FAF6EE]/90 to-[#FCE6D8]/90 dark:from-[#112218]/90 dark:via-[#14281D]/90 dark:to-[#183123]/90 backdrop-blur-xl border border-[#E8DFC8]/80 dark:border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.85),0_8px_24px_-8px_rgba(27,56,43,0.06)] px-4 sm:px-6 py-2 sm:py-2.5 scale-100"
         )}
       >
-        <div className="flex items-center justify-between gap-2 sm:gap-4">
+        <div className="flex items-center justify-between gap-2 sm:gap-3">
           {/* Logo with micro-interaction */}
           <Link
             href="/"
-            className="group flex items-center gap-2 p-1 rounded-full transition-transform duration-200 active:scale-95"
+            className="group flex items-center gap-2 p-1 rounded-full transition-transform duration-200 active:scale-95 shrink-0"
             aria-label="littlejoy by A2ZUK — Home"
           >
             <span
@@ -101,7 +103,7 @@ export default function Header() {
             />
             <span
               className={cn(
-                "font-bold tracking-tight text-[#1B382B] group-hover:text-[#234E3D] transition-all duration-300",
+                "font-bold tracking-tight text-[#1B382B] dark:text-[#E2ECE5] group-hover:text-[#234E3D] dark:group-hover:text-[#D4E865] transition-all duration-300",
                 isScrolled ? "text-lg sm:text-xl" : "text-xl sm:text-[22px]"
               )}
             >
@@ -112,13 +114,19 @@ export default function Header() {
           {/* Desktop Nav with active indicator dot and dynamic collapse */}
           <DesktopNav isScrolled={isScrolled} />
 
-          {/* Desktop User Status & CTA Button */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* Desktop Action Controls: Language, Theme, User Status & CTA Button */}
+          <div className="hidden md:flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Free Google Website Translator */}
+            <LanguageTranslator variant="header" />
+
+            {/* Dark/Light Theme Toggle */}
+            <ThemeToggle />
+
             {user ? (
               <Link
                 href="/profile"
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full font-semibold text-[#1B382B] bg-[#FAF8F5] hover:bg-[#F0ECE1] border border-[#E8DFC8] transition-all duration-200 shadow-2xs whitespace-nowrap",
+                  "inline-flex items-center gap-1.5 rounded-full font-semibold text-[#1B382B] dark:text-[#E2ECE5] bg-[#FAF8F5] dark:bg-[#1A2820] hover:bg-[#F0ECE1] dark:hover:bg-[#23352B] border border-[#E8DFC8] dark:border-white/15 transition-all duration-200 shadow-2xs whitespace-nowrap",
                   isScrolled ? "px-2.5 py-1 text-xs" : "px-3.5 py-1.5 text-xs sm:text-sm"
                 )}
                 title="View your contestant profile & votes"
@@ -132,7 +140,7 @@ export default function Header() {
               <Link
                 href="/profile"
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full font-semibold text-[#1B382B] hover:text-[#234E3D] hover:bg-[#234E3D]/8 transition-all duration-200 whitespace-nowrap",
+                  "inline-flex items-center gap-1.5 rounded-full font-semibold text-[#1B382B] dark:text-[#E2ECE5] hover:text-[#234E3D] dark:hover:text-[#D4E865] hover:bg-[#234E3D]/8 dark:hover:bg-white/10 transition-all duration-200 whitespace-nowrap",
                   isScrolled ? "px-2.5 py-1 text-xs" : "px-3.5 py-1.5 text-xs sm:text-sm"
                 )}
               >

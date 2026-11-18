@@ -70,8 +70,8 @@ export function DesktopNav({ isScrolled = false }: DesktopNavProps) {
               "relative rounded-full transition-all duration-300 font-semibold inline-flex flex-col items-center justify-center",
               isScrolled ? "px-3 pt-1 pb-2.5 text-xs" : "px-4 pt-1.5 pb-3 text-sm",
               isActive
-                ? "text-[#234E3D] bg-[#234E3D]/12 font-bold shadow-xs"
-                : "text-[#1B382B] hover:text-[#234E3D] hover:bg-[#234E3D]/8"
+                ? "text-[#234E3D] dark:text-[#D4E865] bg-[#234E3D]/12 dark:bg-white/10 font-bold shadow-xs"
+                : "text-[#1B382B] dark:text-[#E2ECE5] hover:text-[#234E3D] dark:hover:text-[#D4E865] hover:bg-[#234E3D]/8 dark:hover:bg-white/10"
             )}
             aria-current={isActive ? "page" : undefined}
           >
@@ -81,7 +81,7 @@ export function DesktopNav({ isScrolled = false }: DesktopNavProps) {
             {isActive && (
               <span
                 className={cn(
-                  "absolute left-1/2 -translate-x-1/2 rounded-full bg-[#234E3D]",
+                  "absolute left-1/2 -translate-x-1/2 rounded-full bg-[#234E3D] dark:bg-[#D4E865]",
                   isScrolled ? "bottom-0.5 w-1 h-1" : "bottom-1 w-1.5 h-1.5"
                 )}
                 aria-hidden="true"

@@ -1,59 +1,68 @@
 import Link from "next/link";
 import ScrollReveal from "./ScrollReveal";
+import { VisitorCounter } from "./VisitorCounter";
+import { LanguageTranslator } from "./LanguageTranslator";
 
 export default function Footer() {
   return (
     <ScrollReveal direction="fade" delayMs={50}>
-      <footer className="w-full pt-4 pb-12 mt-6 border-t border-[#EFECE4]/80 text-xs text-[#6B7D72]">
+      <footer className="w-full pt-8 pb-12 mt-10 border-t border-[#EFECE4]/80 dark:border-[#283C30] text-xs text-[#6B7D72] dark:text-[#95A59B]">
+        {/* Real-time Attention-Grabbing Community Visitor Counter */}
+        <VisitorCounter className="mb-8" />
+
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Policy & Help Links with smooth hover transitions */}
           <nav
             aria-label="Footer Navigation"
-            className="flex flex-wrap items-center gap-x-2 gap-y-1 font-medium"
+            className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 font-medium"
           >
             <Link
               href="/how-it-works"
-              className="hover:text-[#1B382B] hover:underline underline-offset-4 transition-all duration-200 py-1"
+              className="hover:text-[#1B382B] dark:hover:text-[#E2ECE5] hover:underline underline-offset-4 transition-all duration-200 py-1"
             >
               How It Works
             </Link>
-            <span aria-hidden="true" className="text-[#A2B1A8]">
+            <span aria-hidden="true" className="text-[#A2B1A8] dark:text-[#42594D]">
               ·
             </span>
             <Link
               href="/help"
-              className="hover:text-[#1B382B] hover:underline underline-offset-4 transition-all duration-200 py-1"
+              className="hover:text-[#1B382B] dark:hover:text-[#E2ECE5] hover:underline underline-offset-4 transition-all duration-200 py-1"
             >
               Help &amp; FAQs
             </Link>
-            <span aria-hidden="true" className="text-[#A2B1A8]">
+            <span aria-hidden="true" className="text-[#A2B1A8] dark:text-[#42594D]">
               ·
             </span>
             <Link
               href="/privacy-policy"
-              className="hover:text-[#1B382B] hover:underline underline-offset-4 transition-all duration-200 py-1"
+              className="hover:text-[#1B382B] dark:hover:text-[#E2ECE5] hover:underline underline-offset-4 transition-all duration-200 py-1"
             >
               Privacy Policy
             </Link>
-            <span aria-hidden="true" className="text-[#A2B1A8]">
+            <span aria-hidden="true" className="text-[#A2B1A8] dark:text-[#42594D]">
               ·
             </span>
             <Link
               href="/terms"
-              className="hover:text-[#1B382B] hover:underline underline-offset-4 transition-all duration-200 py-1"
+              className="hover:text-[#1B382B] dark:hover:text-[#E2ECE5] hover:underline underline-offset-4 transition-all duration-200 py-1"
             >
               Terms &amp; Conditions
             </Link>
+            <span aria-hidden="true" className="text-[#A2B1A8] dark:text-[#42594D]">
+              ·
+            </span>
+            <LanguageTranslator variant="footer" />
           </nav>
 
           {/* Copyright & Credit */}
-          <p className="text-center sm:text-right text-[#6B7D72]">
+          <p className="text-center sm:text-right text-[#6B7D72] dark:text-[#95A59B]">
             &copy; 2026 A2ZUK. All rights reserved. Developed by{" "}
             <a
               href="https://fsir.in"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-bold text-[#1B382B] hover:text-[#234E3D] hover:underline underline-offset-2 transition-colors duration-200"
+              className="font-bold text-[#1B382B] dark:text-[#D4E865] hover:text-[#234E3D] hover:underline underline-offset-2 transition-colors duration-200"
             >
               FutureSoft India Roorkee
             </a>

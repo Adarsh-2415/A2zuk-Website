@@ -53,6 +53,7 @@ export async function POST(request: Request) {
     consentGuardian: formData.get("consentGuardian") === "true",
     consentSharing: formData.get("consentSharing") === "true",
     consentRules: formData.get("consentRules") === "true",
+    consentAgeVerification: formData.get("consentAgeVerification") === "true",
   };
 
   const parsed = submissionSchema.safeParse(rawPayload);

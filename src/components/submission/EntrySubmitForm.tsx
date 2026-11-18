@@ -97,6 +97,7 @@ export function EntrySubmitForm({
     consentGuardian: false,
     consentSharing: false,
     consentRules: false,
+    consentAgeVerification: false,
   });
 
   const [errors, setErrors] = useState<SubmissionFormErrors>({});
@@ -155,7 +156,12 @@ export function EntrySubmitForm({
       completedSteps += 1;
     }
     // Step 6: Consents
-    if (formData.consentGuardian && formData.consentSharing && formData.consentRules) {
+    if (
+      formData.consentGuardian &&
+      formData.consentSharing &&
+      formData.consentRules &&
+      formData.consentAgeVerification
+    ) {
       completedSteps += 1;
     }
 
@@ -290,6 +296,9 @@ export function EntrySubmitForm({
     if (!formData.consentRules) {
       newErrors.consentRules = "You must agree to the contest rules and privacy notice.";
     }
+    if (!formData.consentAgeVerification) {
+      newErrors.consentAgeVerification = "You must confirm age accuracy and agree to Aadhaar/Birth Certificate verification if selected as a winner.";
+    }
 
     setErrors(newErrors);
     const errorKeys = Object.keys(newErrors);
@@ -330,6 +339,7 @@ export function EntrySubmitForm({
       payload.set("consentGuardian", String(formData.consentGuardian));
       payload.set("consentSharing", String(formData.consentSharing));
       payload.set("consentRules", String(formData.consentRules));
+      payload.set("consentAgeVerification", String(formData.consentAgeVerification));
       payload.set("photo", formData.photo);
 
       const response = await fetch("/api/submissions", {
@@ -376,6 +386,7 @@ export function EntrySubmitForm({
       consentGuardian: false,
       consentSharing: false,
       consentRules: false,
+      consentAgeVerification: false,
     });
     setErrors({});
     setSubmitError(null);
@@ -759,6 +770,20 @@ export function EntrySubmitForm({
                 {errors.childDateOfBirth && (
                   <p className="text-xs font-medium text-red-600">{errors.childDateOfBirth}</p>
                 )}
+
+                {/* Age Accuracy & Winner Verification Notice */}
+                <div className="mt-3 p-4 rounded-2xl bg-[#FFFBEB] border border-[#FDE68A] space-y-2 text-xs text-[#92400E] leading-relaxed">
+                  <div className="flex items-center gap-2 font-bold text-xs sm:text-sm text-[#78350F]">
+                    <span className="text-base" aria-hidden="true">⚠️</span>
+                    <span>Age Accuracy &amp; Mandatory Document Verification</span>
+                  </div>
+                  <p>
+                    Parents must provide 100% accurate and truthful information regarding their child&apos;s age. For example, if a child falls into an infant category (such as 6 months), the baby must genuinely be 6 months old and not older (e.g. entering a 4-year-old child in an infant category is strictly prohibited).
+                  </p>
+                  <p className="font-semibold text-[#78350F] bg-amber-100/70 p-2.5 rounded-xl border border-amber-200/80">
+                    Mandatory Winner Verification: Potential winners must submit official documents such as an Aadhaar Card or Birth Certificate for age verification before prizes are disbursed. If a participant fails to submit the necessary documentation, they will be removed from the winners&apos; list as they will be considered ineligible.
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -874,6 +899,23 @@ export function EntrySubmitForm({
                 {errors.consentRules && (
                   <p className="text-xs font-medium text-red-600 pl-7">{errors.consentRules}</p>
                 )}
+
+                {/* Consent 4: Age Accuracy & Winner Document Verification */}
+                <label className="flex items-start gap-3 cursor-pointer group select-none">
+                  <input
+                    type="checkbox"
+                    required
+                    checked={formData.consentAgeVerification}
+                    onChange={(e) => handleCheckboxChange("consentAgeVerification", e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded text-[#234E3D] focus:ring-[#234E3D] border-[#EFECE4]"
+                  />
+                  <span className="text-xs sm:text-sm text-[#4A5D52] group-hover:text-[#1B382B] leading-snug">
+                    I confirm my child&apos;s date of birth is accurate. I understand that winners must submit an Aadhaar Card or Birth Certificate for verification, and failure to provide valid documentation will result in disqualification. <span className="text-[#F2653B]">*</span>
+                  </span>
+                </label>
+                {errors.consentAgeVerification && (
+                  <p className="text-xs font-medium text-red-600 pl-7">{errors.consentAgeVerification}</p>
+                )}
               </div>
             </div>
 
@@ -888,10 +930,10 @@ export function EntrySubmitForm({
             )}
 
             {/* Consent Requirement Notice & Submit Button */}
-            {(!formData.consentGuardian || !formData.consentSharing || !formData.consentRules) && (
+            {(!formData.consentGuardian || !formData.consentSharing || !formData.consentRules || !formData.consentAgeVerification) && (
               <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-[#FFFBEB] border border-[#FDE68A] text-xs font-semibold text-[#92400E]">
                 <span className="text-base" aria-hidden="true">🔒</span>
-                <span>Please confirm all 3 mandatory checkboxes in Section 6 to enable entry submission.</span>
+                <span>Please confirm all 4 mandatory checkboxes in Section 6 to enable entry submission.</span>
               </div>
             )}
 
@@ -899,17 +941,17 @@ export function EntrySubmitForm({
             <div className="pt-2">
               <button
                 type="submit"
-                disabled={!formData.consentGuardian || !formData.consentSharing || !formData.consentRules}
+                disabled={!formData.consentGuardian || !formData.consentSharing || !formData.consentRules || !formData.consentAgeVerification}
                 className={`w-full py-4 px-6 rounded-full text-sm sm:text-base font-semibold text-white transition-all duration-200 shadow-sm flex items-center justify-center gap-2 ${
-                  !formData.consentGuardian || !formData.consentSharing || !formData.consentRules
+                  !formData.consentGuardian || !formData.consentSharing || !formData.consentRules || !formData.consentAgeVerification
                     ? "bg-[#8CA395] cursor-not-allowed opacity-80"
                     : "bg-[#234E3D] hover:bg-[#1A3B2E] active:scale-[0.99] hover:shadow-md cursor-pointer group"
                 }`}
               >
-                {!formData.consentGuardian || !formData.consentSharing || !formData.consentRules ? (
+                {!formData.consentGuardian || !formData.consentSharing || !formData.consentRules || !formData.consentAgeVerification ? (
                   <>
                     <span aria-hidden="true">🔒</span>
-                    <span>Confirm All 3 Consents to Submit</span>
+                    <span>Confirm All 4 Consents to Submit</span>
                   </>
                 ) : (
                   <>

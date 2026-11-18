@@ -68,8 +68,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased min-h-screen bg-[#FAF8F5] text-[#1E3529] font-sans selection:bg-[#D4E865] selection:text-[#1B382B]">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var savedTheme = localStorage.getItem('theme');
+                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="antialiased min-h-screen bg-[#FAF8F5] dark:bg-[#0F1914] text-[#1E3529] dark:text-[#E2ECE5] font-sans selection:bg-[#D4E865] selection:text-[#1B382B] transition-colors duration-200">
         {children}
       </body>
     </html>

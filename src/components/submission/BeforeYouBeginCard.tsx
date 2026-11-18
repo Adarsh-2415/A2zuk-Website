@@ -54,6 +54,21 @@ export function BeforeYouBeginCard() {
               Fast safety &amp; quality review
             </p>
           </div>
+
+          {/* Step 04 - Age Accuracy & Winner Verification */}
+          <div className="flex items-start gap-4">
+            <span className="font-bold text-sm text-[#D4E865] shrink-0 mt-0.5">
+              04
+            </span>
+            <div>
+              <p className="text-sm sm:text-base font-semibold text-white/95">
+                Accurate age details
+              </p>
+              <p className="text-xs text-white/70 mt-0.5 leading-snug">
+                Winners must present Aadhaar or Birth Certificate for verification.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Card Footer Microcopy */}

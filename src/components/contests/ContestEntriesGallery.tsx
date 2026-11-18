@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { BabyAgeCategory } from "@/types/entry";
 import type { GalleryEntryItem } from "@/lib/queries/entries";
 import BabyIllustration from "@/components/BabyIllustration";
+import { PhotoLightboxModal } from "@/components/ui/PhotoLightboxModal";
 
 interface ContestEntriesGalleryProps {
   entries: GalleryEntryItem[];
@@ -36,6 +37,7 @@ export function ContestEntriesGallery({
 }: ContestEntriesGalleryProps) {
   const [ageFilter, setAgeFilter] = useState<AgeFilter>("all");
   const [sortBy, setSortBy] = useState<SortMode>("votes");
+  const [activeLightboxEntry, setActiveLightboxEntry] = useState<GalleryEntryItem | null>(null);
 
   const filteredEntries = useMemo(() => {
     const filtered =
@@ -159,15 +161,42 @@ export function ContestEntriesGallery({
                 key={entry.slug}
                 className="bg-[#FAF8F5] rounded-[24px] p-4 border border-[#EFECE4] hover:border-[#234E3D]/30 transition-all duration-200 flex flex-col"
               >
-                <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden mb-3 relative bg-white">
+                <div
+                  onClick={() => entry.photoUrl && setActiveLightboxEntry(entry)}
+                  role={entry.photoUrl ? "button" : undefined}
+                  tabIndex={entry.photoUrl ? 0 : undefined}
+                  onKeyDown={(e) => {
+                    if (entry.photoUrl && (e.key === "Enter" || e.key === " ")) {
+                      e.preventDefault();
+                      setActiveLightboxEntry(entry);
+                    }
+                  }}
+                  className={`w-full aspect-[4/3] rounded-2xl overflow-hidden mb-3 relative bg-[#FAF8F5] ${
+                    entry.photoUrl
+                      ? "cursor-zoom-in group/photo focus:outline-none focus:ring-2 focus:ring-[#1B382B]"
+                      : ""
+                  }`}
+                  aria-label={entry.photoUrl ? `View high resolution photo of ${entry.displayName}` : undefined}
+                >
                   {entry.photoUrl ? (
-                    <Image
-                      src={entry.photoUrl}
-                      alt={entry.photoAlt || `Photo of ${entry.displayName}`}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 340px"
-                      className="object-cover object-center"
-                    />
+                    <>
+                      <Image
+                        src={entry.photoUrl}
+                        alt={entry.photoAlt || `Photo of ${entry.displayName}`}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+                        quality={90}
+                        className="object-cover object-center group-hover/photo:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover/photo:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
+                        <span className="opacity-0 group-hover/photo:opacity-100 transition-opacity bg-black/60 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md backdrop-blur-sm flex items-center gap-1">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                          </svg>
+                          Zoom
+                        </span>
+                      </div>
+                    </>
                   ) : (
                     <BabyIllustration variant={variant} />
                   )}
@@ -192,6 +221,17 @@ export function ContestEntriesGallery({
             );
           })}
         </div>
+      )}
+
+      {activeLightboxEntry?.photoUrl && (
+        <PhotoLightboxModal
+          isOpen={true}
+          onClose={() => setActiveLightboxEntry(null)}
+          photoUrl={activeLightboxEntry.photoUrl}
+          photoAlt={activeLightboxEntry.photoAlt || `Photo of ${activeLightboxEntry.displayName}`}
+          displayName={activeLightboxEntry.displayName}
+          ageCategory={activeLightboxEntry.ageCategory}
+        />
       )}
     </section>
   );

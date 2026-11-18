@@ -18,6 +18,7 @@ export interface SubmissionFormData {
   consentGuardian: boolean;
   consentSharing: boolean;
   consentRules: boolean;
+  consentAgeVerification: boolean;
 }
 
 export type SubmissionFormErrors = Partial<Record<keyof SubmissionFormData, string>>;

@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
@@ -221,9 +222,9 @@ async function ContestDetailContent({
 
             <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#EFECE4] space-y-1.5">
               <span className="text-2xl" aria-hidden="true">🛡️</span>
-              <h3 className="font-bold text-sm text-[#1B382B]">Anti-Self-Vote &amp; Safety</h3>
+              <h3 className="font-bold text-sm text-[#1B382B]">Fair Community Voting</h3>
               <p className="text-xs text-[#5A6D61] leading-relaxed">
-                Parents share their baby’s page with loved ones. Automated anti-bot audits ensure 100% genuine tallies.
+                Parents can vote for their child too! Each verified Google account receives 1 permanent vote per baby.
               </p>
             </div>
           </div>
@@ -251,14 +252,26 @@ async function ContestDetailContent({
           >
             Official Contest Winners
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {winners.map((winner) => (
               <Link
                 key={winner.id}
                 href={`/contests/${contest.slug}/entries/${winner.entry.publicCode}`}
-                className="p-5 rounded-2xl bg-[#FAF8F5] border border-[#EFECE4] hover:border-[#234E3D]/30 transition-colors flex flex-col gap-2"
+                className="group p-5 rounded-2xl bg-[#FAF8F5] border border-[#EFECE4] hover:border-[#234E3D]/30 hover:shadow-md transition-all duration-200 flex flex-col"
               >
-                <div className="flex items-center justify-between">
+                {winner.entry.photoUrl && (
+                  <div className="w-full aspect-[4/3] rounded-xl overflow-hidden relative mb-3 bg-white">
+                    <Image
+                      src={winner.entry.photoUrl}
+                      alt={`Photo of ${winner.entry.displayName}`}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+                      quality={90}
+                      className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                )}
+                <div className="flex items-center justify-between mb-2">
                   <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#D4E865] text-[#1B382B]">
                     Rank #{winner.rank}
                   </span>
@@ -266,10 +279,10 @@ async function ContestDetailContent({
                     {winner.formattedPrizeAmount}
                   </span>
                 </div>
-                <p className="text-lg font-bold text-[#1B382B]">
+                <p className="text-lg font-bold text-[#1B382B] group-hover:text-[#234E3D] transition-colors">
                   {winner.entry.displayName}
                 </p>
-                <p className="text-xs text-[#5A6D61]">
+                <p className="text-xs text-[#5A6D61] mt-1">
                   {winner.entry.city}, {winner.entry.state} • {winner.entry.voteCount} votes
                 </p>
               </Link>
